@@ -38,10 +38,12 @@ def formatage(link, nb_jour=-1, date_debut=-1):
         j = len(liste_lignes)
 
     #pour chaque ligne qui fait parti de la suite de jour qui est demandé on teste la qualité pour voir si elle vaut 'A'
+    only_one = True
     for i in range(0, len(liste_lignes)):
         test_qualite = liste_lignes[i].split()
-        if int(float(date_debut)) == int(float(test_qualite[3])):
+        if float(date_debut) <= float(test_qualite[3]) and only_one:
             j = i + nb_jour
+            only_one = False
 
         test_qualite = liste_lignes[i].split()
         if test_qualite[1] != "A" and date_debut <= float(test_qualite[3]) and ((nb_jour == -1 and float(test_qualite[3]) <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
@@ -55,7 +57,7 @@ def formatage(link, nb_jour=-1, date_debut=-1):
             mat_affinee = np.zeros((len(liste_lignes), 8))
         else:
             indice_ligne_debut_mesure = j - nb_jour
-            mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure), 8)
+            mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure, 8))
     else:
         mat_affinee = np.zeros((nb_jour, 8))
 
