@@ -10,6 +10,9 @@ def vitesseMidas(data, periode=365):
     :param data: données formatées par notre fonction formatage dans le dossier Traitement
     :param periode: la période est une durée en jour qui choisiera le nombre de jour entre deux date utiliser pour calculer la vitesse
                     avec l'estimateur MIDAS
+    :type data: np.array
+    :type periode: int
     :return: renvoi une matrice de une ligne et deux colonnes, le première élément est la vitesse calculé avec l'estimateur MIDAS,
              le deuxième élément est l'écart-type sur la vitesse calculé.
+    :type return: np.array
     """
