@@ -69,6 +69,7 @@ def vitesseMidas(data, periode):
     delta_vitesse = vitesse - mediane
     delta_vitesse = abs(delta_vitesse)
     mad = np.median(delta_vitesse))
+    mad = np.median(delta_vitesse)
     sigma = 1.4826*mad
 
     liste_vitesse_epurre = []
@@ -79,7 +80,7 @@ def vitesseMidas(data, periode):
     mediane = np.median(liste_vitesse_epurre)
     delta_vitesse = liste_vitesse_epurre - mediane
     delta_vitesse = abs(delta_vitesse)
-    mad = np.median(delta_vitesse))
+    mad = np.median(delta_vitesse)
     sigma = 1.4826*mad
     return [mediane, sigma]
 
