@@ -10,11 +10,11 @@ def globalMidas(data, periode=365):
     :param data: données formatées par notre fonction formatage localisée dans le dossier Traitement
     :param periode: la période est une durée en jour qui choisiera le nombre de jour entre deux date utiliser pour calculer la vitesse
                     avec l'estimateur MIDAS
-    :type data: np.array
+    :type data: np.array (n,8)
     :type periode: int
     :return: renvoi une matrice de deux lignes et trois colonnes, la première ligne est la vitesse sur chaque coordonnées
              calculé avec l'estimateur MIDAS la deuxième ligne est l'écart-type des vitesses calculées
-    :type return: np.array
+    :type return: np.array (2,3)
     """
 
     #reformatage
@@ -53,36 +53,48 @@ def vitesseMidas(data, periode):
     :param data: matrice de taille (2,n) qui contient les dates sur la première colonne et les positions sur la deuxième
     :param periode: la période est une durée en jour qui choisiera le nombre de jour entre deux date utiliser pour calculer la vitesse
                     avec l'estimateur MIDAS
-    :type data: np.array
+    :type data: np.array (n,2)
     :type param: int
     :return: un array de taille 2 qui contient la vitesse calculé par l'estimateur MIDAS et l'écart-type qui lui est associé
-    :type return: list
+    :type return: np.array
     """
     #la liste contenant toute les vitesses calculer
     liste_sens_direct = appairage_vitesse(data, periode)
     data_indirect = data[::-1]
     liste_sens_indirect = appairage_vitesse(data_indirect, -periode)
 
+    #on reunie les deux listes de vitesse
     liste_vitesse = liste_sens_direct + liste_sens_indirect
     vitesse = np.array(liste_vitesse)
+
+    #on regarde la médiane
     mediane = np.median(vitesse)
     delta_vitesse = vitesse - mediane
     delta_vitesse = abs(delta_vitesse)
-    mad = np.median(delta_vitesse))
+
+    #on calcule le MAD
     mad = np.median(delta_vitesse)
+    #on en déduit l'écart type
     sigma = 1.4826*mad
 
+    #on crée la liste sans les valeurs abérentes
     liste_vitesse_epurre = []
     for i in vitesse:
         if abs(i - mediane) < 2*sigma:
             liste_vitesse_epurre.append(i)
     liste_vitesse_epurre = np.array(liste_vitesse_epurre)
+
+    #on en recalcule la médiane
     mediane = np.median(liste_vitesse_epurre)
     delta_vitesse = liste_vitesse_epurre - mediane
     delta_vitesse = abs(delta_vitesse)
+
+    #on calcule le MAD
     mad = np.median(delta_vitesse)
+
+    #on en déduit l'écart type
     sigma = 1.4826*mad
-    return [mediane, sigma]
+    return np.array([mediane, sigma])
 
 def appairage_vitesse(data, periode):
     """
