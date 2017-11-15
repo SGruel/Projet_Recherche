@@ -21,23 +21,23 @@ def graphiqueUnique(link):
     nb_mesures = np.arange(50,2000,50)
 
     # les listes que l'on affichera ensuite
-    vitesse_t_E = []
-    vitesse_t_N = []
-    vitesse_t_h = []
+    vitesse_E = []
+    vitesse_N = []
+    vitesse_h = []
 
     # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesure:
         data = formatage(link, nb_jour = i)
         liste_MC = moindresCarres(data)
-        vitesse_t_E.append(liste_MC[0][2][0])
-        vitesse_t_N.append(liste_MC[1][2][0])
-        vitesse_t_h.append(liste_MC[2][2][0])
+        vitesse_E.append(liste_MC[0][2][0])
+        vitesse_N.append(liste_MC[1][2][0])
+        vitesse_h.append(liste_MC[2][2][0])
 
     #figure de la vitesse sur l'axe E
     py.figure(0)
 
-    py.plot(t, vitesse_t_E, 'g', label='vitesse moindres carrées sur E')
-    py.plot(t, len(t) * [vitesseMidas[0][0]], 'r', label='vitesse MIDAS sur E')
+    py.plot(nb_mesures, vitesse_E, 'g', label='vitesse moindres carrées sur E')
+    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[0][0]], 'r', label='vitesse MIDAS sur E')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe E en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -46,8 +46,8 @@ def graphiqueUnique(link):
     # figure de la vitesse sur l'axe N
     py.figure(1)
 
-    py.plot(t, vitesse_t_N, 'g', label='vitesse moindres carrées sur N')
-    py.plot(t, len(t) * [vitesseMidas[1][0]], 'r', label='vitesse MIDAS sur N')
+    py.plot(nb_mesures, vitesse_N, 'g', label='vitesse moindres carrées sur N')
+    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[1][0]], 'r', label='vitesse MIDAS sur N')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe N en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -56,8 +56,8 @@ def graphiqueUnique(link):
     # figure de la vitesse sur l'axe h
     py.figure(2)
 
-    py.plot(t, vitesse_t_h, 'g', label='vitesse moindres carrées sur h')
-    py.plot(t, len(t) * [vitesseMidas[2][0]], 'r', label='vitesse MIDAS sur h')
+    py.plot(nb_mesures, vitesse_h, 'g', label='vitesse moindres carrées sur h')
+    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[2][0]], 'r', label='vitesse MIDAS sur h')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe h en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -78,7 +78,7 @@ def graphiqueMidas(link):
 
     #on varie la longueur du pas pour faciliter le calcul
     nb1 = np.arange(50, 400, 10)
-    nb2 = np.arange(400, len(data)+50, 50)
+    nb2 = np.arange(400, 1000, 50)
     nb3 = np.arange(1000, len(data) + 100, 100)
     nb_mesure = np.concatenate((nb1, nb2, nb3), axis=0)
 
@@ -97,9 +97,9 @@ def graphiqueMidas(link):
     #figure avec les vitesses sur chaque axes
     py.figure(0)
 
-    py.plot(t, vitesseMidas_E, 'g', label="vitesse sur l'axe E")
-    py.plot(t, vitesseMidas_N, 'r', label="vitesse sur l'axe N")
-    py.plot(t, vitesseMidas_h, 'b', label="vitesse sur l'axe h")
+    py.plot(nb_mesure, vitesseMidas_E, 'g', label="vitesse sur l'axe E")
+    py.plot(nb_mesure, vitesseMidas_N, 'r', label="vitesse sur l'axe N")
+    py.plot(nb_mesure, vitesseMidas_h, 'b', label="vitesse sur l'axe h")
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -108,9 +108,9 @@ def graphiqueMidas(link):
     #figure avec les écart-types de la mesures des vitesses
     py.figure(1)
 
-    py.plot(t, ecartype_E, 'g', label="ecart-type sur l'axe E")
-    py.plot(t, ecartype_N, 'r', label="ecart-type sur l'axe N")
-    py.plot(t, ecartype_h, 'b', label="ecart-type sur l'axe h")
+    py.plot(nb_mesure, ecartype_E, 'g', label="ecart-type sur l'axe E")
+    py.plot(nb_mesure, ecartype_N, 'r', label="ecart-type sur l'axe N")
+    py.plot(nb_mesure, ecartype_h, 'b', label="ecart-type sur l'axe h")
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Ecart-type en fonction du nombre de jour de mesure (m/j)")
     py.legend()
