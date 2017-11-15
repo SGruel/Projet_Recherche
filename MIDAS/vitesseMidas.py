@@ -122,7 +122,7 @@ def appairage_vitesse(data, periode):
                 pairage[j] = 1
                 break
 
-    #on cherche pour chacune mesures non appairées la mesures la plus proche de une période en temps
+    #on cherche pour chacune des mesures non appairées la mesures la plus proche de plus ou moins une période en temps
     for i in range(len(data)):
         dist_opti = -1
         indice_opti = False
@@ -148,4 +148,5 @@ def appairage_vitesse(data, periode):
             #de la boucle
             else:
                 break
+    #on renvoit la liste des vitesses construite dans le programme
     return liste_vitesse
