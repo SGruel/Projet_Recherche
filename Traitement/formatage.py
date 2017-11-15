@@ -37,14 +37,25 @@ def formatage(link, nb_jour=-1, date_debut=-1):
     else:
         j = len(liste_lignes)
 
-    #pour chaque ligne qui fait parti de la suite de jour qui est demandé on teste la qualité pour voir si elle vaut 'A'
+    #notre indice pour la date de fin si elle est atteinte
+    k = len(liste_lignes)
+
+    #on utilise des paramètres booléen pour diminuer le temps de calcul
     only_one = True
+    only_two = True
+    # pour chaque ligne qui fait parti de la suite de jour qui est demandé on teste la qualité pour voir si elle vaut 'A'
+    # on initialise aussi des variables d'info sur la série
     for i in range(0, len(liste_lignes)):
         test_qualite = liste_lignes[i].split()
         #on en profite pour noter à quel moment on dépasse la date de début en terme d'indice dans liste_lignes
-        if float(date_debut) <= float(test_qualite[3]) and only_one:
+        if only_one and float(date_debut) <= float(test_qualite[3]):
             j = i + nb_jour
             only_one = False
+
+        #on note aussi à quel indice on passe la date de fin pour la taille de notre matrice de sortie
+        if only_two and test_qualite[3]==date_fin:
+            k = i
+            only_two = False
 
         #si la qualité est mauvaise et que l'on est dans la suite de jour demandée, on affiche un warning
         if test_qualite[1] != "A" and date_debut <= float(test_qualite[3]) and ((nb_jour == -1 and float(test_qualite[3]) <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
@@ -57,13 +68,26 @@ def formatage(link, nb_jour=-1, date_debut=-1):
 
     #on crée notre matrice à remplir avec le bon nombre de ligne
     if nb_jour == -1:
-        if date_debut < float(split[4]): #split[4] correspond à la date de la première mesure
-            mat_affinee = np.zeros((len(liste_lignes), 8))
+        if k == len(liste_lignes):
+            if date_debut < float(split[3]): #split[4] correspond à la date de la première mesure
+                mat_affinee = np.zeros((len(liste_lignes), 8))
+            else:
+                indice_ligne_debut_mesure = j - nb_jour
+                mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure, 8))
         else:
-            indice_ligne_debut_mesure = j - nb_jour
-            mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure, 8))
+            if date_debut < float(split[3]):
+                mat_affinee = np.zeros((k + 1, 8))
+            else:
+                indice_ligne_debut_mesure = j - nb_jour
+                mat_affinee = np.zeros((k - indice_ligne_debut_mesure, 8))
+
     else:
-        mat_affinee = np.zeros((nb_jour, 8))
+        #cas ou le nombre de jour ne fait pas dépasser la date final
+        if j<k:
+            mat_affinee = np.zeros((nb_jour, 8))
+        #cas ou le nombre de jour fait dépasser la date final
+        else:
+            mat_affinee = np.zeros((k - j + nb_jour, 8))
 
     #on rempli notre matrice final avec la suite de jour demandée
     num_ligne = 0
