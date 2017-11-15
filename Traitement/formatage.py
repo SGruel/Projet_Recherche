@@ -24,13 +24,13 @@ def formatage(link, nb_jour=-1, date_debut=-1):
              la sixième à la huitième donnent la précision en E, N, h.
     :type return: np.array
     """
-    #ouverrture du fichier pour tester la qualité des données
+    #ouverture du fichier pour tester la qualité des données
     fichier = open(link, "r")
     liste_lignes = fichier.readlines()
     date_fin = 57037.5
 
     #on a besoin du j si on a une date de début et un nombre de jour.
-    # Dans ce cas, il faut que le nombre de ligne parcouru soit inférieur au nombre de jour
+    #Dans ce cas, il faut que le nombre de ligne parcouru soit nb_jour
     split = liste_lignes[0].split()
     if date_debut < float(split[3]):
         j = nb_jour
@@ -41,17 +41,21 @@ def formatage(link, nb_jour=-1, date_debut=-1):
     only_one = True
     for i in range(0, len(liste_lignes)):
         test_qualite = liste_lignes[i].split()
+        #on en profite pour noter à quel moment on dépasse la date de début en terme d'indice dans liste_lignes
         if float(date_debut) <= float(test_qualite[3]) and only_one:
             j = i + nb_jour
             only_one = False
 
-        test_qualite = liste_lignes[i].split()
+        #si la qualité est mauvaise et que l'on est dans la suite de jour demandée, on affiche un warning
         if test_qualite[1] != "A" and date_debut <= float(test_qualite[3]) and ((nb_jour == -1 and float(test_qualite[3]) <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
             print("La mesures du jour " + test_qualite[3] + " sur la station " + test_qualite[0] + " n'est noté que " + test_qualite[1])
 
     fichier.close()
 
-    mat_brute = np.genfromtxt(link )
+    #on bosse maintenant sur la matrice généré par numpy qui contient des flottants et non pas des strings
+    mat_brute = np.genfromtxt(link)
+
+    #on crée notre matrice à remplir avec le bon nombre de ligne
     if nb_jour == -1:
         if date_debut < float(split[4]): #split[4] correspond à la date de la première mesure
             mat_affinee = np.zeros((len(liste_lignes), 8))
@@ -61,6 +65,7 @@ def formatage(link, nb_jour=-1, date_debut=-1):
     else:
         mat_affinee = np.zeros((nb_jour, 8))
 
+    #on rempli notre matrice final avec la suite de jour demandée
     num_ligne = 0
     for i in range(0, len(mat_brute)):
         if date_debut <= mat_brute[i][3] and ((nb_jour == -1 and mat_brute[i][3] <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
