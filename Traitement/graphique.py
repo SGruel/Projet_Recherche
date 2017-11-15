@@ -15,7 +15,7 @@ def graphiqueUnique(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    liste_MC_final = moindresCarres(data)
+    #liste_MC_final = moindresCarres(data)
 
     t = np.arange(50,2000,50)
     vitesse_t_E = []
@@ -36,8 +36,7 @@ def graphiqueUnique(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe E en fonction du nombre de jour de mesure (m/j)")
     py.legend()
-
-    py.show()
+    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\graph\\MC" + link[-12:-8] + "_E")
 
     py.figure(1)
 
@@ -46,8 +45,7 @@ def graphiqueUnique(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe N en fonction du nombre de jour de mesure (m/j)")
     py.legend()
-
-    py.show()
+    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\graph\\MC" + link[-12:-8] + "_N")
 
     py.figure(2)
 
@@ -56,8 +54,8 @@ def graphiqueUnique(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe h en fonction du nombre de jour de mesure (m/j)")
     py.legend()
+    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\graph\\MC" + link[-12:-8] + "_h")
 
-    py.show()
 
 def graphiqueMidas(link):
     data = formatage(link)
@@ -69,7 +67,9 @@ def graphiqueMidas(link):
     ecartype_E     = []
     ecartype_N     = []
     ecartype_h     = []
-    t = np.arange(50, len(data)+50, 50)
+    t1 = np.arange(50, 400, 10)
+    t2 = np.arange(400, len(data)+50, 50)
+    t = t1 + t2
     for i in t:
         print(i)
         data = formatage(link, nb_jour = i)
@@ -89,9 +89,7 @@ def graphiqueMidas(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse en fonction du nombre de jour de mesure (m/j)")
     py.legend()
-    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\test" + "_vitesse")
-
-    py.show()
+    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\graph\\MIDAS" + link[-12:-8] + "_vitesse")
 
     py.figure(1)
 
@@ -101,6 +99,4 @@ def graphiqueMidas(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Ecart-type en fonction du nombre de jour de mesure (m/j)")
     py.legend()
-    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\test"  + "_ecart_type")
-
-    py.show()
+    py.savefig("C:\\Users\\Hul\\Desktop\\Projet_recherche\\graph\\MIDAS" + link[-12:-8] + "_ecart_type")
