@@ -59,21 +59,22 @@ def vitesseMidas(data, periode):
     :type return: np.array
     """
     #la liste contenant toute les vitesses calculer
-    liste_sens_direct = appairage_vitesse(data, periode)
-    data_indirect = data[::-1]
+    liste_sens_direct   = appairage_vitesse(data, periode)
+    data_indirect       = data[::-1]
     liste_sens_indirect = appairage_vitesse(data_indirect, -periode)
 
     #on reunie les deux listes de vitesse
     liste_vitesse = liste_sens_direct + liste_sens_indirect
-    vitesse = np.array(liste_vitesse)
+    vitesse       = np.array(liste_vitesse)
 
     #on regarde la médiane
-    mediane = np.median(vitesse)
+    mediane       = np.median(vitesse)
     delta_vitesse = vitesse - mediane
     delta_vitesse = abs(delta_vitesse)
 
     #on calcule le MAD
     mad = np.median(delta_vitesse)
+
     #on en déduit l'écart type
     sigma = 1.4826*mad
 
@@ -85,7 +86,7 @@ def vitesseMidas(data, periode):
     liste_vitesse_epurre = np.array(liste_vitesse_epurre)
 
     #on en recalcule la médiane
-    mediane = np.median(liste_vitesse_epurre)
+    mediane       = np.median(liste_vitesse_epurre)
     delta_vitesse = liste_vitesse_epurre - mediane
     delta_vitesse = abs(delta_vitesse)
 
@@ -124,25 +125,25 @@ def appairage_vitesse(data, periode):
 
     #on cherche pour chacune des mesures non appairées la mesures la plus proche de plus ou moins une période en temps
     for i in range(len(data)):
-        dist_opti = -1
+        dist_opti   = -1
         indice_opti = False
         if not(pairage[i]):
             #on recherche la meilleure paire
             for j in range(len(data)):
                 if not(pairage[j]) and i!=j:
-                    delta = data[j][0] - data[i][0]
-                    dist_periode = abs(delta - periode)
+                    delta              = data[j][0] - data[i][0]
+                    dist_periode       = abs(delta - periode)
                     dist_moins_periode = abs(delta + periode)
                     if dist_opti > dist_periode or dist_opti ==-1:
-                        dist_opti = dist_periode
+                        dist_opti   = dist_periode
                         indice_opti = j
                     if dist_opti > dist_moins_periode:
-                        dist_opti = dist_moins_periode
+                        dist_opti   = dist_moins_periode
                         indice_opti = j
             #on l'utilise pour calculer une vitesse
             if indice_opti != False:
                 liste_vitesse.append((data[indice_opti][1] - data[i][1]) / (data[indice_opti][0] - data[i][0]))
-                pairage[i] = 1
+                pairage[i]           = 1
                 pairage[indice_opti] = 1
             #si il n'y a plus de meilleure autre paire alors c'est qu'il n'y a plus aucune valeur disponible et donc on peut sortir
             #de la boucle
