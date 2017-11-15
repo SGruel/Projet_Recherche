@@ -68,15 +68,22 @@ def formatage(link, nb_jour=-1, date_debut=-1):
 
     #on crée notre matrice à remplir avec le bon nombre de ligne
     if nb_jour == -1:
+        #cas ou on ne dépasse pas la date de fin dans la série
         if k == len(liste_lignes):
+            #cas ou le début de la série de mesures se fait après la date de début
             if date_debut < float(split[3]): #split[4] correspond à la date de la première mesure
                 mat_affinee = np.zeros((len(liste_lignes), 8))
+            #cas ou le début de la série de mesure se fait après la date de début
             else:
                 indice_ligne_debut_mesure = j - nb_jour
                 mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure, 8))
+
+        #cas ou on dépasse la date de fin dans la série
         else:
+            # cas ou le début de la série de mesures se fait après la date de début
             if date_debut < float(split[3]):
                 mat_affinee = np.zeros((k + 1, 8))
+            # cas ou le début de la série de mesure se fait après la date de début
             else:
                 indice_ligne_debut_mesure = j - nb_jour
                 mat_affinee = np.zeros((k - indice_ligne_debut_mesure, 8))
