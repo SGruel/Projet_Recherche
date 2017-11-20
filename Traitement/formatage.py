@@ -42,20 +42,15 @@ def formatage(link, nb_jour=-1, date_debut=-1):
 
     #on utilise des paramètres booléen pour diminuer le temps de calcul
     only_one = True
-    only_two = True
     # pour chaque ligne qui fait parti de la suite de jour qui est demandé on teste la qualité pour voir si elle vaut 'A'
     # on initialise aussi des variables d'info sur la série
     for i in range(0, len(liste_lignes)):
         test_qualite = liste_lignes[i].split()
+
         #on en profite pour noter à quel moment on dépasse la date de début en terme d'indice dans liste_lignes
         if only_one and float(date_debut) <= float(test_qualite[3]):
             j = i + nb_jour
             only_one = False
-
-        #on note aussi à quel indice on passe la date de fin pour la taille de notre matrice de sortie
-        if only_two and test_qualite[3]==date_fin:
-            k = i
-            only_two = False
 
         #si la qualité est mauvaise et que l'on est dans la suite de jour demandée, on affiche un warning
         if test_qualite[1] != "A" and date_debut <= float(test_qualite[3]) and ((nb_jour == -1 and float(test_qualite[3]) <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
@@ -65,56 +60,12 @@ def formatage(link, nb_jour=-1, date_debut=-1):
 
     #on bosse maintenant sur la matrice généré par numpy qui contient des flottants et non pas des strings
     mat_brute = np.genfromtxt(link)
-    """
-    #on crée notre matrice à remplir avec le bon nombre de ligne
-    if nb_jour == -1:
-        #cas ou on ne dépasse pas la date de fin dans la série
-        if k == len(liste_lignes):
-            #cas ou le début de la série de mesures se fait après la date de début
-            if date_debut < float(split[3]): #split[4] correspond à la date de la première mesure
-                mat_affinee = np.zeros((len(liste_lignes), 8))
-            #cas ou le début de la série de mesure se fait après la date de début
-            else:
-                indice_ligne_debut_mesure = j - nb_jour
-                mat_affinee = np.zeros((len(liste_lignes) - indice_ligne_debut_mesure, 8))
 
-        #cas ou on dépasse la date de fin dans la série
-        else:
-            # cas ou le début de la série de mesures se fait après la date de début
-            if date_debut < float(split[3]):
-                mat_affinee = np.zeros((k + 1, 8))
-            # cas ou le début de la série de mesure se fait après la date de début
-            else:
-                indice_ligne_debut_mesure = j - nb_jour
-                mat_affinee = np.zeros((k - indice_ligne_debut_mesure, 8))
-
-    else:
-        #cas ou le nombre de jour ne fait pas dépasser la date final
-        if j<k:
-            mat_affinee = np.zeros((nb_jour, 8))
-        #cas ou le nombre de jour fait dépasser la date final
-        else:
-            mat_affinee = np.zeros((k - j + nb_jour, 8))
-
-    #on rempli notre matrice final avec la suite de jour demandée
-    num_ligne = 0
-    for i in range(0, len(mat_brute)):
-        if date_debut <= mat_brute[i][3] and ((nb_jour == -1 and mat_brute[i][3] <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
-            mat_affinee[num_ligne][0] = mat_brute[i][2]
-            mat_affinee[num_ligne][1] = mat_brute[i][3]
-            mat_affinee[num_ligne][2] = mat_brute[i][6]
-            mat_affinee[num_ligne][3] = mat_brute[i][7]
-            mat_affinee[num_ligne][4] = mat_brute[i][8]
-            mat_affinee[num_ligne][5] = mat_brute[i][9]
-            mat_affinee[num_ligne][6] = mat_brute[i][10]
-            mat_affinee[num_ligne][7] = mat_brute[i][11]
-            num_ligne += 1
-
-    return mat_affinee
-    """
+    #on crée la nouvelle matrice a remplir
     mat_affinee = []
     for i in range(len(mat_brute)):
         ligne = 8*[0]
+        #si on est sur les bonnes mesures on rempli la matrice
         if date_debut <= mat_brute[i][3] and ((nb_jour == -1 and mat_brute[i][3] <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
             ligne[0] = mat_brute[i][2]
             ligne[1] = mat_brute[i][3]
