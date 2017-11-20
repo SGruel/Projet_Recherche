@@ -65,7 +65,7 @@ def formatage(link, nb_jour=-1, date_debut=-1):
 
     #on bosse maintenant sur la matrice généré par numpy qui contient des flottants et non pas des strings
     mat_brute = np.genfromtxt(link)
-
+    """
     #on crée notre matrice à remplir avec le bon nombre de ligne
     if nb_jour == -1:
         #cas ou on ne dépasse pas la date de fin dans la série
@@ -109,5 +109,22 @@ def formatage(link, nb_jour=-1, date_debut=-1):
             mat_affinee[num_ligne][6] = mat_brute[i][10]
             mat_affinee[num_ligne][7] = mat_brute[i][11]
             num_ligne += 1
+
+    return mat_affinee
+    """
+    mat_affinee = []
+    for i in range(len(mat_brute)):
+        ligne = 8*[0]
+        if date_debut <= mat_brute[i][3] and ((nb_jour == -1 and mat_brute[i][3] <= date_fin) or (nb_jour != -1 and date_debut == -1 and i < nb_jour) or (nb_jour != -1 and date_debut != -1 and i < j)):
+            ligne[0] = mat_brute[i][2]
+            ligne[1] = mat_brute[i][3]
+            ligne[2] = mat_brute[i][6]
+            ligne[3] = mat_brute[i][7]
+            ligne[4] = mat_brute[i][8]
+            ligne[5] = mat_brute[i][9]
+            ligne[6] = mat_brute[i][10]
+            ligne[7] = mat_brute[i][11]
+            mat_affinee.append(ligne)
+    mat_affinee = np.array(mat_affinee)
 
     return mat_affinee
