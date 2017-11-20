@@ -116,22 +116,30 @@ def appairage_vitesse(data, periode):
 
     #on fait les appairages évident car distant de 1 an
     for i in range(len(data)):
-        for j in range(i, len(data)):
+        for j in range(i, min(i+365, len(data))):
             if data[i][0] == data[j][0] + periode:
                 liste_vitesse.append((data[j][1] - data[i][1])/(data[j][0] - data[i][0]))
                 pairage[i] = 1
                 pairage[j] = 1
                 break
 
-    #on cherche pour chacune des mesures non appairées la mesures la plus proche de plus ou moins une période en temps
+    #nouvelle liste de données plus petite pour la complexité
+    new_data = []
     for i in range(len(data)):
+        if not(pairage[i]):
+            new_data.append(data[i])
+    new_data = np.array(new_data)
+    new_pairage = np.zeros(len(new_data))
+
+    #on cherche pour chacune des mesures non appairées la mesures la plus proche de plus ou moins une période en temps
+    for i in range(len(new_data)):
         dist_opti   = -1
         indice_opti = False
-        if not(pairage[i]):
+        if not(new_pairage[i]):
             #on recherche la meilleure paire
-            for j in range(len(data)):
-                if not(pairage[j]) and i!=j:
-                    delta              = data[j][0] - data[i][0]
+            for j in range(len(new_data)):
+                if not(new_pairage[j]) and i!=j:
+                    delta              = new_data[j][0] - new_data[i][0]
                     dist_periode       = abs(delta - periode)
                     dist_moins_periode = abs(delta + periode)
                     if dist_opti > dist_periode or dist_opti ==-1:
@@ -142,9 +150,9 @@ def appairage_vitesse(data, periode):
                         indice_opti = j
             #on l'utilise pour calculer une vitesse
             if indice_opti != False:
-                liste_vitesse.append((data[indice_opti][1] - data[i][1]) / (data[indice_opti][0] - data[i][0]))
-                pairage[i]           = 1
-                pairage[indice_opti] = 1
+                liste_vitesse.append((new_data[indice_opti][1] - new_data[i][1]) / (new_data[indice_opti][0] - new_data[i][0]))
+                new_pairage[i]           = 1
+                new_pairage[indice_opti] = 1
             #si il n'y a plus de meilleure autre paire alors c'est qu'il n'y a plus aucune valeur disponible et donc on peut sortir
             #de la boucle
             else:
