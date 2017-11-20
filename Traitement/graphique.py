@@ -81,7 +81,6 @@ def graphiqueMidas(link):
     nb2 = np.arange(400, 1000, 50)
     nb3 = np.arange(1000, len(data) + 100, 100)
     nb_mesure = np.concatenate((nb1, nb2, nb3), axis=0)
-    nb_mesure = nb1
 
     #pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesure:
