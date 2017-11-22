@@ -15,7 +15,7 @@ def graphiqueUnique(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    #liste_MC_final = moindresCarres(data)
+    #liste_MC_final = moindreCarres(data)
 
     #une liste avec un pas régulier pour afficher en fonction du nombre de mesure
     nb_mesures = np.arange(50,2000,50)
@@ -66,7 +66,6 @@ def graphiqueUnique(link):
 
 def graphiqueMidas(link):
     data = formatage(link)
-    #vitesseMidas_final = globalMidas(data)
 
     #les listes que l'on affichera ensuite
     vitesseMidas_E = []
@@ -115,3 +114,80 @@ def graphiqueMidas(link):
     py.ylabel("Ecart-type en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MIDAS\\" + link[-12:-8] + "_ecart_type")
+
+def graphiqueData(link):
+    data = formatage(link)
+
+    t = data[:,1]
+    E = data[:,2]
+    N = data[:,3]
+    h = data[:,4]
+
+    py.figure(0)
+
+    py.plot(t, E, 'g', label='position sur E')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\position\\" + link[-12:-8] + "_E")
+
+    py.figure(1)
+
+    py.plot(t, N, 'g', label='position sur N')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\position\\" + link[-12:-8] + "_N")
+
+    py.figure(2)
+
+    py.plot(t, h, 'g', label='position sur h')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\position\\" + link[-12:-8] + "_h")
+
+def graphiqueTot(link):
+    data = formatage(link)
+    vitesseMidas = globalMidas(data)
+    #liste_MC_final = moindreCarres(data)
+
+    t = data[:, 1]
+    E = data[:, 2]
+    N = data[:, 3]
+    h = data[:, 4]
+
+    E_midas = []
+    N_midas = []
+    h_midas = []
+    for i in range(len(data)):
+        E_midas.append(data[0][2] + vitesseMidas[0][0]*(data[i][1] - data[0][1]))
+        N_midas.append(data[0][3] + vitesseMidas[0][1]*(data[i][1] - data[0][1]))
+        h_midas.append(data[0][4] + vitesseMidas[0][2]*(data[i][1] - data[0][1]))
+
+    py.figure(0)
+
+    py.plot(t, E, 'g', label='position sur E')
+    py.plot(t, E_midas, 'r', label='position sur E prédit par MIDAS')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_E")
+
+    py.figure(1)
+
+    py.plot(t, N, 'g', label='position sur N')
+    py.plot(t, N_midas, 'r', label='position sur N prédit par MIDAS')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_N")
+
+    py.figure(2)
+
+    py.plot(t, h, 'g', label='position sur h')
+    py.plot(t, h_midas, 'r', label='position sur h prédit par MIDAS')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_h")
