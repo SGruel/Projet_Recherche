@@ -14,12 +14,12 @@ def moindreCarres(data, periode, covariance=False):
     :type periode : list
     :return: liste des paramêtres déterminés pour chacun des axes avec leur écart-types, les 3 derniers éléments correspondent à l'écartype au carré total des moindres carrés.
     """
-    t0= data[len(data)//2,1]
+    t0= np.mean(data[:,1])
     resultat = [t0]
     # premier traitement avec un axe, on comence par la creation de matrice
     b = matriceB(data, 'East')
     # pour la date de référence, on prend cette dernière au milieu du jeu de données
-    a = matriceA(data, data[len(data) // 2][1], periode)
+    a = matriceA(data, t0, periode)
     p = matriceP(data, 'East', covariance)
     # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
     N = np.dot(a.transpose(), np.dot(p, a))
@@ -136,10 +136,10 @@ def matriceA(data, t0, periode):
         A[:, (2 * i + 2)] = np.cos((A[:, 1] / periode[i]))
         A[:, (2 * i + 3)] = np.sin((A[:, 1] / periode[i]))
     # indice de saut
-    for j in range(len(data)):
-        for i in range(len(liste_saut)):
-            if data[j, 0] == liste_saut[i]:
-                A[j, i + 2 * len(periode) + 2] = 1
+
+    for i in range(len(liste_saut)):
+        loc= np.where(data[:,0]== liste_saut[i])
+        A[loc, i + 2 * len(periode) + 2] = 1
 
     return A
 
