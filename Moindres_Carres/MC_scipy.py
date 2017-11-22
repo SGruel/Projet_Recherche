@@ -36,3 +36,34 @@ def test_MC(data):
     res_robust = least_squares(fun, x0, loss='huber', args=(t, t0, saut, pos))
 
     return res_robust
+
+def test_ls(a, b, c, d):
+    def squares(x, t, pos):
+        return x[0] + x[1]*t + x[2]*t**2 + x[3]*t**3 - pos
+
+    x0 = np.ones(4)
+    t = np.arrange(0,1000,1)
+    pos = []
+    for i in t:
+        pos.append(a + b*i + c*i**2 + d*i**3 + np.random())
+    pos = np.array(pos)
+
+    test = least_squares(squares, x0, loss='huber', args=(t, pos))
+
+    return test
+
+def test_saut_ls(a, b, c, d, e):
+    def up(x, t, saut, pos):
+        sum = 0
+        for i in [2,3,4]:
+            sum += x[i]*t**i
+        return sum + x[0] + x[1]*t - pos
+
+    x0 = np.ones(5)
+    t = np.arrange(0, 1000, 1)
+    pos = []
+    for i in t:
+        pos.append(a + b * i + c * i ** 2 + d * i ** 3 + e * i ** 4 +np.random())
+    pos = np.array(pos)
+
+    test = least_squares(squares, x0, loss='huber', args=(t, pos))

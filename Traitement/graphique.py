@@ -15,7 +15,7 @@ def graphiqueUnique(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    #liste_MC_final = moindreCarres(data)
+    liste_MC_final = moindreCarres(data)
 
     #une liste avec un pas régulier pour afficher en fonction du nombre de mesure
     nb_mesures = np.arange(50,2000,50)
@@ -29,9 +29,9 @@ def graphiqueUnique(link):
     for i in nb_mesure:
         data = formatage(link, nb_jour = i)
         liste_MC = moindresCarres(data)
-        vitesse_E.append(liste_MC[0][2][0])
-        vitesse_N.append(liste_MC[1][2][0])
-        vitesse_h.append(liste_MC[2][2][0])
+        vitesse_E.append(liste_MC[1][2][0])
+        vitesse_N.append(liste_MC[2][2][0])
+        vitesse_h.append(liste_MC[3][2][0])
 
     #figure de la vitesse sur l'axe E
     py.figure(0)
