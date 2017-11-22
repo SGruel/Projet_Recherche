@@ -14,7 +14,8 @@ def moindreCarres(data, periode, covariance=False):
     :type periode : list
     :return: liste des paramêtres déterminés pour chacun des axes avec leur écart-types, les 3 derniers éléments correspondent à l'écartype au carré total des moindres carrés.
     """
-    resultat = []
+    t0= data[len(data)//2,1]
+    resultat = [t0]
     # premier traitement avec un axe, on comence par la creation de matrice
     b = matriceB(data, 'East')
     # pour la date de référence, on prend cette dernière au milieu du jeu de données
@@ -35,7 +36,7 @@ def moindreCarres(data, periode, covariance=False):
     # on extrait maintenant le rendu voulu
     res_east = [sigma2]
     for i in range(len(X)):
-        res_east.append([X[i], covX[i][i]])
+        res_east.append([X[i], np.sqrt(covX[i][i])])
     resultat.append(res_east)
 
     # on itère avec les autre axe
@@ -58,7 +59,7 @@ def moindreCarres(data, periode, covariance=False):
     # on extrait maintenant le rendu voulu
     res_north = [sigma2]
     for i in range(len(X)):
-        res_north.append([X[i], covX[i][i]])
+        res_north.append([X[i], np.sqrt(covX[i][i])])
     resultat.append(res_north)
 
     b = matriceB(data, 'Up')
@@ -80,9 +81,10 @@ def moindreCarres(data, periode, covariance=False):
     # on extrait maintenant le rendu voulu
     res_up = [sigma2]
     for i in range(len(X)):
-        res_up.append([X[i], covX[i][i]])
+        res_up.append([X[i], np.sqrt(covX[i][i])])
     resultat.append(res_up)
 
+    return resultat
 
 
 
@@ -178,10 +180,10 @@ def matriceNormaleLigne(A, P):
     """
     N = np.zeros((len(A[0]), len(A[0])))
     for i in range(len(A)):
-        ta = A[i].transpose()
-        a = A[i]
-        p = P[i]
-        pa = np.dot(P[i], A[i])
+        ta = A[i,:].transpose()
+        a = A[i,:]
+        p = P[i][i]
+        pa = np.dot(P[i][i], A[i,:])
         N += np.dot(ta, pa)
     return N
 
@@ -199,5 +201,5 @@ def vecteurKligne(A, P, B):
         K += 1
 
 
-data = frm.formatage('C:\\Users\\simeon\\Documents\\ENSG\\Projets\\Recherche\\Projet_Siméon_Hugo\\test.xyz')
-print(moindreCarres(data, [365.25,182.625]),False,True)
+data = frm.formatage('../DataIGS08/ABPO_igs.xyz')
+print(moindreCarres(data, [365.25,182.625]),False)
