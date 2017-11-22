@@ -1,6 +1,6 @@
 import numpy as np
 import Traitement.formatage as frm
-
+import matplotlib.pyplot as plt
 
 def moindreCarres(data, periode, covariance=False):
     """
@@ -21,17 +21,12 @@ def moindreCarres(data, periode, covariance=False):
     a = matriceA(data, data[len(data) // 2][1], periode)
     p = matriceP(data, 'East', covariance)
     # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
-   # N = np.zeros((len(data[1]), len(data[1])))
-    #K = np.zeros((len(data[1]), 1))
-    #for i in range(len(data)):
-     #   N += matriceNormaleLigne(a[i], p[i][i])
-      #  K += vecteurKligne(a[i], p[i], b[i])
-
-    N= np.dot(np.transpose(a),np.dot(p,a))
-    K=np.dot(np.transpose(a),np.dot(p,b))
+    N = np.dot(a.transpose(), np.dot(p, a))
+    K = np.dot(a.transpose(), np.dot(p, b))
     # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
     X = np.dot(np.linalg.inv(N), K)
     V = b - np.dot(a, X)
+    East_true=np.dot(a,X)
     # on  regarde ensuite les élément statistique
     sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
         len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
@@ -54,6 +49,7 @@ def moindreCarres(data, periode, covariance=False):
     # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
     X = np.dot(np.linalg.inv(N), K)
     V = b - np.dot(a, X)
+    North_true=np.dot(a,X)
     # on  regarde ensuite les élément statistique
     sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
         len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
@@ -75,6 +71,7 @@ def moindreCarres(data, periode, covariance=False):
     # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
     X = np.dot(np.linalg.inv(N), K)
     V = b - np.dot(a, X)
+    Up_true= np.dot(a,X)
     # on  regarde ensuite les élément statistique
     sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
         len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
@@ -86,7 +83,7 @@ def moindreCarres(data, periode, covariance=False):
         res_up.append([X[i], covX[i][i]])
     resultat.append(res_up)
 
-    return resultat
+
 
 
 def matriceB(data, axe):
@@ -123,17 +120,24 @@ def matriceA(data, t0, periode):
     :param t0: temps de reference
     :return: matrice
     """
-    nb_serie = int(data[-1][0])
-    A = np.zeros((len(data), 1 + 2 * len(periode) + nb_serie))
+    liste_saut = []
+    for i in range(len(data)):
+        if data[i, 0] != 1 and not (data[i, 0] in liste_saut):
+            liste_saut.append(int(data[i, 0]))
+
+    nb_serie = len(liste_saut)
+    A = np.zeros((len(data), 2 + 2 * len(periode) + nb_serie))
     A[:, 0] = 1
     A[:, 1] = (data[:, 1] - t0)
     for i in range(len(periode)):
         # implementation des coefficient de périodicité
-        A[:, (i + 2)] = np.cos((A[:, 1] / periode[i]))
-        A[:, (i + 3)] = np.sin((A[:, 1] / periode[i]))
+        A[:, (2 * i + 2)] = np.cos((A[:, 1] / periode[i]))
+        A[:, (2 * i + 3)] = np.sin((A[:, 1] / periode[i]))
     # indice de saut
-    for j in range (len(data)):
-        A[j, int(data[j,0])  + 2 * len(periode)] = 1
+    for j in range(len(data)):
+        for i in range(len(liste_saut)):
+            if data[j, 0] == liste_saut[i]:
+                A[j, i + 2 * len(periode) + 2] = 1
 
     return A
 
@@ -150,6 +154,7 @@ def matriceP(data, axe, covariance=False):
     
     
     """
+
     P = np.zeros((len(data), len(data)))
     indice = 0
     if axe == "North":
@@ -167,24 +172,32 @@ def matriceP(data, axe, covariance=False):
 def matriceNormaleLigne(A, P):
     """
     Fonction de sous-calcul de la matrice normale pour le traitement ligne par ligne. effectue le produit AtPA sur une ligne de la matrice A.
-    :param A: ligne de la matrice A 
-    :param P: poids de la mesure correspondant à la ligne A
+    :param A: matrice  A
+    :param P: Matrice de poids P
     :return: matrice carrée de la longueur de A
     """
-    Nligne = np.dot(np.transpose(A), P * A)
-    return Nligne
+    N = np.zeros((len(A[0]), len(A[0])))
+    for i in range(len(A)):
+        ta = A[i].transpose()
+        a = A[i]
+        p = P[i]
+        pa = np.dot(P[i], A[i])
+        N += np.dot(ta, pa)
+    return N
 
 
 def vecteurKligne(A, P, B):
     """
-    Fonction de calcul d'un élément du vecteur K . Le calcul est fai par ligne  de manière  à alleger ce dernier.
+    Fonction de calcul d'un élément du vecteur K . Le calcul est fait par ligne  de manière  à alleger ce dernier.
     :param A: ligne de la matrice A
     :param P: colonne de la matrice P correspondant  à la ligne de A
     :param B:  observation
     :return: matrice composé d'un élément unique
     """
-    Kligne = np.dot(np.dot(np.transpose(A),P),B)
-    return Kligne
+    K = np.zeros((len(A), 1))
+    for i in range:
+        K += 1
 
 
-
+data = frm.formatage('C:\\Users\\simeon\\Documents\\ENSG\\Projets\\Recherche\\Projet_Siméon_Hugo\\test.xyz')
+print(moindreCarres(data, [365.25,182.625]),False,True)
