@@ -150,7 +150,7 @@ def graphiqueData(link):
 def graphiqueTot(link):
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    #liste_MC_final = moindreCarres(data)
+    MC = moindreCarres(data, [365.25, 365.25/2])
 
     t = data[:, 1]
     E = data[:, 2]
@@ -160,15 +160,24 @@ def graphiqueTot(link):
     E_midas = []
     N_midas = []
     h_midas = []
+    E_mc = []
+    N_mc = []
+    h_mc = []
+    print(MC)
     for i in range(len(data)):
         E_midas.append(data[0][2] + vitesseMidas[0][0]*(data[i][1] - data[0][1]))
         N_midas.append(data[0][3] + vitesseMidas[0][1]*(data[i][1] - data[0][1]))
         h_midas.append(data[0][4] + vitesseMidas[0][2]*(data[i][1] - data[0][1]))
+        E_mc.append(MC[1][1][0] + MC[1][2][0]*(data[i][1] - MC[0]) + MC[1][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[1][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[1][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[1][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+        N_mc.append(MC[2][1][0] + MC[2][2][0]*(data[i][1] - MC[0]) + MC[2][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[2][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[2][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[2][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+        h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+
 
     py.figure(0)
 
     py.plot(t, E, 'g', label='position sur E')
     py.plot(t, E_midas, 'r', label='position sur E prédit par MIDAS')
+    py.plot(t, E_mc, 'b', label='position sur E predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
@@ -178,6 +187,7 @@ def graphiqueTot(link):
 
     py.plot(t, N, 'g', label='position sur N')
     py.plot(t, N_midas, 'r', label='position sur N prédit par MIDAS')
+    py.plot(t, N_mc, 'b', label='position sur N predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
@@ -187,6 +197,7 @@ def graphiqueTot(link):
 
     py.plot(t, h, 'g', label='position sur h')
     py.plot(t, h_midas, 'r', label='position sur h prédit par MIDAS')
+    py.plot(t, h_mc, 'b', label='position sur h predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
