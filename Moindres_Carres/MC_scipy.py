@@ -2,10 +2,20 @@ from scipy.optimize import least_squares
 import numpy as np
 
 def delta(x):
-    if x<0:
-        return 0
+    if type(x) == type(np.array(1)):
+        l = []
+        for i in x:
+            if i<0:
+                l.append(1)
+            else:
+                l.append(0)
+        l = np.array(l)
+        return l
     else:
-        return 1
+        if x<0:
+            return 0
+        else:
+            return 1
 
 def test_MC(data):
     def fun(x, t, t0, saut, pos):
