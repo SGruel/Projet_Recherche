@@ -57,13 +57,13 @@ def test_saut_ls(a, b, c, d, e):
         sum = 0
         for i in [2,3,4]:
             sum += x[i]*t**i
-        return sum + x[0] + x[1]*t - pos
+        return sum + x[0] + x[1]*t + x[5]*delta(t-500)- pos
 
-    x0 = [a+np.random.random(), b+np.random.random(), c+np.random.random(), d+np.random.random()*0.1, e+np.random.random()*0.01]
+    x0 = [a+np.random.random(), b+np.random.random(), c+np.random.random(), d+np.random.random()*0.1, e+np.random.random()*0.01, -1000]
     t = np.arange(0, 1000, 1)
     pos = []
     for i in t:
-        pos.append(a + b*i + c*i**2 + d*i**3 + e*i**4 + np.random.random())
+        pos.append(a + b*i + c*i**2 + d*i**3 + e*i**4 -1000**delta(i-500) + np.random.random())
     pos = np.array(pos)
 
     test = least_squares(up, x0, loss='huber', args=(t, pos))
