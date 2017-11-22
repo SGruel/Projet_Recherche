@@ -18,7 +18,7 @@ def graphiqueUnique(link):
     liste_MC_final = moindreCarres(data)
 
     #une liste avec un pas régulier pour afficher en fonction du nombre de mesure
-    nb_mesures = np.arange(50,2000,50)
+    nb_mesures = np.arange(50, len(data), 50)
 
     # les listes que l'on affichera ensuite
     vitesse_E = []

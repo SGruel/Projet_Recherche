@@ -25,11 +25,13 @@ def test_MC(data):
             total_saut += x[i]*delta(t-saut[i])
         return x[0] + x[1] * (t - t0) + x[2] * np.cos((t - t0) / T) + x[3] * np.sin((t - t0) / T) + x[4] * \
                 np.cos(2 * (t - t0) / T) + x[5] * np.sin(2 * (t - t0) / T) + total_saut - pos
+
     compt = 0
     for i in range(1,len(data)):
         if data[i][0] != data[i-1][0]:
             compt += 1
-    x0 = np.ones(6 + compt)
+
+    x0 = np.concatenate((np.array([data[0][2], (data[0][2]-data[-1][2])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
     t = []
     pos = []
     saut = []
