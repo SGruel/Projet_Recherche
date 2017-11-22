@@ -30,8 +30,10 @@ def test_MC(data):
             saut.append(data[i][1])
     t = np.array(t)
     pos = np.array(pos)
-    t0 = np.array(len(data) * [t[abs(len(t)/2)]])
-    saut = np.array(len(data) * [saut])
+    t0 = np.array(len(t) * [t[int(len(t)/2)]])
+    saut = np.array(len(t) * [saut])
+    print(saut.shape)
+    print(t0.shape)
 
     res_robust = least_squares(fun, x0, loss='huber', args=(t, t0, saut, pos))
 
@@ -63,7 +65,7 @@ def test_saut_ls(a, b, c, d, e):
     t = np.arange(0, 1000, 1)
     pos = []
     for i in t:
-        pos.append(a + b*i + c*i**2 + d*i**3 + e*i**4 -1000**delta(i-500) + np.random.random())
+        pos.append(a + b*i + c*i**2 + d*i**3 + e*i**4 - 1000**delta(i-500) + np.random.random())
     pos = np.array(pos)
 
     test = least_squares(up, x0, loss='huber', args=(t, pos))
