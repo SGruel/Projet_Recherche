@@ -201,5 +201,5 @@ def vecteurKligne(A, P, B):
         K += 1
 
 
-data = frm.formatage('../DataIGS08/ABPO_igs.xyz')
-print(moindreCarres(data, [365.25,182.625]),False)
+#data = frm.formatage('../DataIGS08/ABPO_igs.xyz')
+#print(moindreCarres(data, [365.25,182.625]),False)

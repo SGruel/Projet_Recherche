@@ -21,7 +21,7 @@ def test_MC(data):
     def fun(x, t, t0, saut, pos):
         T = 365.25
         total_saut = 0
-        for i in range(6, 6 + len(saut)):
+        for i in range(6, 6 + len(saut[0])):
             total_saut += x[i]*delta(t-saut[i])
         return x[0] + x[1] * (t - t0) + x[2] * np.cos((t - t0) / T) + x[3] * np.sin((t - t0) / T) + x[4] * \
                 np.cos(2 * (t - t0) / T) + x[5] * np.sin(2 * (t - t0) / T) + total_saut - pos
@@ -31,25 +31,33 @@ def test_MC(data):
         if data[i][0] != data[i-1][0]:
             compt += 1
 
-    x0 = np.concatenate((np.array([data[0][2], (data[0][2]-data[-1][2])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
+    x0_E = np.concatenate((np.array([data[0][2], (data[0][2]-data[-1][2])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
+    x0_N = np.concatenate((np.array([data[0][3], (data[0][3]-data[-1][3])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
+    x0_h = np.concatenate((np.array([data[0][4], (data[0][4]-data[-1][4])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
     t = []
-    pos = []
+    pos_E = []
+    pos_N = []
+    pos_h = []
     saut = []
     for i in range(len(data)):
         t.append(data[i][1])
-        pos.append(data[i][2])
+        pos_E.append(data[i][2])
+        pos_N.append(data[i][3])
+        pos_h.append(data[i][4])
         if i>0 and data[i][0]>data[i-1][0]:
             saut.append(data[i][1])
     t = np.array(t)
-    pos = np.array(pos)
-    t0 = np.array(len(t) * [t[int(len(t)/2)]])
+    pos_E = np.array(pos_E)
+    pos_N = np.array(pos_N)
+    pos_h = np.array(pos_h)
+    t0 = np.array(len(t) * [np.mean(data[:,1])])
     saut = np.array(len(t) * [saut])
-    print(saut.shape)
-    print(t0.shape)
 
-    res_robust = least_squares(fun, x0, loss='huber', args=(t, t0, saut, pos))
+    res_robust_E = least_squares(fun, x0_E, loss='huber', args=(t, t0, saut, pos_E))
+    res_robust_N = least_squares(fun, x0_N, loss='huber', args=(t, t0, saut, pos_N))
+    res_robust_h = least_squares(fun, x0_h, loss='huber', args=(t, t0, saut, pos_h))
 
-    return res_robust
+    return [res_robust_E, res_robust_N, res_robust_h]
 
 def test_ls(a, b, c, d):
     def squares(x, t, pos):

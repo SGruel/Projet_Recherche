@@ -3,6 +3,7 @@ import numpy as np
 from Traitement.formatage import formatage
 from MIDAS.vitesseMidas import globalMidas
 from Moindres_Carres.vitesse_MC import moindreCarres
+from Moindres_Carres.MC_scipy import test_MC
 
 def graphiqueUnique(link):
     """
@@ -202,3 +203,56 @@ def graphiqueTot(link):
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_h")
+
+def graphiqueCompMC(link):
+    data = formatage(link)
+    MC = moindreCarres(data, [365.25, 365.25/2])
+    r = test_MC(data)
+
+    t = data[:, 1]
+    E = data[:, 2]
+    N = data[:, 3]
+    h = data[:, 4]
+
+    E_test = []
+    N_test = []
+    h_test = []
+    E_mc = []
+    N_mc = []
+    h_mc = []
+    t0 = np.mean(data[:,1])
+    print(MC)
+    for i in range(len(data)):
+        E_test.append(r[0].x[0] + r[0].x[1]*(data[i][1] - t0) + r[0].x[2]*np.cos((data[i][1] - t0)/365.25) + r[0].x[3]*np.sin((data[i][1] - t0)/365.25) + r[0].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[0].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
+        N_test.append(r[1].x[0] + r[1].x[1]*(data[i][1] - t0) + r[1].x[2]*np.cos((data[i][1] - t0)/365.25) + r[1].x[3]*np.sin((data[i][1] - t0)/365.25) + r[1].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[1].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
+        h_test.append(r[2].x[0] + r[2].x[1]*(data[i][1] - t0) + r[2].x[2]*np.cos((data[i][1] - t0)/365.25) + r[2].x[3]*np.sin((data[i][1] - t0)/365.25) + r[2].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[2].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
+        E_mc.append(MC[1][1][0] + MC[1][2][0]*(data[i][1] - MC[0]) + MC[1][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[1][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[1][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[1][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+        N_mc.append(MC[2][1][0] + MC[2][2][0]*(data[i][1] - MC[0]) + MC[2][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[2][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[2][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[2][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+        h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+
+    py.figure(0)
+
+    py.plot(t, E_test, 'r', label='position sur E scipy')
+    py.plot(t, E_mc, 'b', label='position sur E predit par les paramètres moindres carrés')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_E")
+
+    py.figure(1)
+
+    py.plot(t, N_test, 'r', label='position sur N prédit par scipy')
+    py.plot(t, N_mc, 'b', label='position sur N predit par les paramètres moindres carrés')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_N")
+
+    py.figure(2)
+
+    py.plot(t, h_test, 'r', label='position sur h prédit par scipy')
+    py.plot(t, h_mc, 'b', label='position sur h predit par les paramètres moindres carrés')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
+    py.legend()
+    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_h")
