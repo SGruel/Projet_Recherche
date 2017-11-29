@@ -1,13 +1,20 @@
+import os
 import Traitement.graphique as gr
 from Moindres_Carres.MC_scipy import test_MC, test_ls, test_saut_ls
 from Moindres_Carres.vitesse_MC import moindreCarres
 from Traitement.formatage import formatage
 
-path = "C:\\Users\\Hul\\Desktop\\Projet_recherche\\TOUL_igs.xyz"
+path = "C:\\Users\\Hul\\Desktop\\Projet_recherche\\DataIGS08"
 
-data = formatage(path)
-#r = test_saut_ls(2, 5, 10, -3, 1)
-r = test_MC(data)
+for element in os.listdir("C:\\Users\\Hul\\Desktop\\Projet_recherche\\DataIGS08"):
+    print(element)
+    if element[-3:] == "xyz":
+        gr.graphiqueMidas(path + "\\" + element)
+
+#data = formatage(path)
+#r = test_ls(2, 5, 10, -3)
+#r = test_MC(data)
+
 #mc = moindreCarres(data, [365.25, 365.25/2])
 #gr.graphiqueMidas(path)
 #gr.graphiqueTot(path)
