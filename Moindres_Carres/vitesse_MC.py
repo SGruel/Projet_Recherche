@@ -1,91 +1,68 @@
 import numpy as np
 import Traitement.formatage as frm
 import matplotlib.pyplot as plt
+import time
 
-def moindreCarres(data, periode, covariance=False):
+def moindreCarres_iter(data, periode,t0,a,b,p,pointsFaux,covariance=False):
     """
-    Renvoie le résultat d'un traitement par moindre carrés d'un jeu de données formaté par la méthode formatage. 
-    Les parametres d'entrée sont envoyés par la fonction traitement.
-    :param data: jeu de données comprenant date série E N U  et écarts type sur ces coordonnées.
-    :param covariance: Matrice de covariance supplémentaire dans le cadre de param^tre extérieures  intervnant sur la donnée mesurée
-    :param periode: périodes influencant la donnée, celles-ci peuvent etre multiple ( a entrer sous forme de liste)
-    :type data: numpy.array
-    :type covariance:numpy.array
-    :type periode : list
-    :return: liste des paramêtres déterminés pour chacun des axes avec leur écart-types, les 3 derniers éléments correspondent à l'écartype au carré total des moindres carrés.
+    Effectue une iteration du traitement par moindre carrés, ajoutant un point faux à la liste si elle existe
+    :param data: donnée formatée
+    :param periode: période influent sur la série
+    :param t0: temps moyen de la série
+    :param axe: axe sur lequel on traite les moindres carrés
+    :param pointsFaux: liste des point faux
+    :param covariance: matrice de covariance optionelle
+    :return:
     """
-    t0= np.mean(data[:,1])
-    resultat = [t0]
-    # premier traitement avec un axe, on comence par la creation de matrice
-    b = matriceB(data, 'East')
-    # pour la date de référence, on prend cette dernière au milieu du jeu de données
-    a = matriceA(data, t0, periode)
-    p = matriceP(data, 'East', covariance)
+
+
+
+
+
     # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
-    N = np.dot(a.transpose(), np.dot(p, a))
-    K = np.dot(a.transpose(), np.dot(p, b))
+
+    N = np.zeros((len(a[0]), len(a[0])))
+    K = np.zeros((len(a[0]), 1))
+    for i in range(len(a)):
+        if i not in pointsFaux:
+            Ni = matriceNormaleLigne(a[i], p[i, i])
+            Ki = vecteurKligne(a[i, :], p[i][i], b[i])
+            N += Ni
+            K += Ki
     # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
-    X = np.dot(np.linalg.inv(N), K)
+    Ninv=np.linalg.inv(N)
+    X = np.dot(Ninv, K)
     V = b - np.dot(a, X)
-    East_true=np.dot(a,X)
-    # on  regarde ensuite les élément statistique
+    East_true = np.dot(a, X)
+    # on  regarde ensuite le facteur unitaire
     sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
         len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
+    # on traite ensuite les points faux
+    Vnorm=np.zeros((V.shape[0],V.shape[1]))
+    for i in range (len(V)):
+        Vnorm[i]=V[i]/np.sqrt(sigma2*(1/p[i][i]-np.dot(a[i],np.dot(Ninv,a[i].reshape((len(a[i]), 1))))))
+    err=np.where(Vnorm>3)[0]
+    max=-1
+    ierr=-1
+    for e in err:
+        if Vnorm[e]> max and e not  in pointsFaux:
+            max=Vnorm[e]
+            ierr=e
+    if max != -1:
+        pointsFaux.append(ierr)
+
+
+
+
+    #on regarde ensuite les autre éléments statistiques
     covX = sigma2 * np.linalg.inv(N)
-    covY = sigma2 * np.linalg.inv(p)
+
     # on extrait maintenant le rendu voulu
-    res_east = [sigma2]
+    res = [sigma2]
     for i in range(len(X)):
-        res_east.append([X[i], np.sqrt(covX[i][i])])
-    resultat.append(res_east)
+        res.append([X[i], np.sqrt(covX[i][i])])
 
-    # on itère avec les autre axe
-    b = matriceB(data, 'North')
-    # pour la date de référence, on prend cette dernière au milieu du jeu de données
-    a = matriceA(data, data[len(data) // 2][1], periode)
-    p = matriceP(data, 'North', covariance)
-    # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
-    N = np.dot(np.transpose(a), np.dot(p, a))
-    K = np.dot(np.transpose(a), np.dot(p, b))
-    # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
-    X = np.dot(np.linalg.inv(N), K)
-    V = b - np.dot(a, X)
-    North_true=np.dot(a,X)
-    # on  regarde ensuite les élément statistique
-    sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
-        len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
-    covX = sigma2 * np.linalg.inv(N)
-    covY = sigma2 * np.linalg.inv(p)
-    # on extrait maintenant le rendu voulu
-    res_north = [sigma2]
-    for i in range(len(X)):
-        res_north.append([X[i], np.sqrt(covX[i][i])])
-    resultat.append(res_north)
-
-    b = matriceB(data, 'Up')
-    # pour la date de référence, on prend cette dernière au milieu du jeu de données
-    a = matriceA(data, data[len(data) // 2][1], periode)
-    p = matriceP(data, 'Up', covariance)
-    # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
-    N = np.dot(np.transpose(a), np.dot(p, a))
-    K = np.dot(np.transpose(a), np.dot(p, b))
-    # on calcul alors les vecteurs des inconnues ainsi que le vecteur residu
-    X = np.dot(np.linalg.inv(N), K)
-    V = b - np.dot(a, X)
-    Up_true= np.dot(a,X)
-    # on  regarde ensuite les élément statistique
-    sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
-        len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
-    covX = sigma2 * np.linalg.inv(N)
-    covY = sigma2 * np.linalg.inv(p)
-    # on extrait maintenant le rendu voulu
-    res_up = [sigma2]
-    for i in range(len(X)):
-        res_up.append([X[i], np.sqrt(covX[i][i])])
-    resultat.append(res_up)
-
-    return resultat
-
+    return [res,pointsFaux]
 
 
 def matriceB(data, axe):
@@ -138,7 +115,7 @@ def matriceA(data, t0, periode):
     # indice de saut
 
     for i in range(len(liste_saut)):
-        loc= np.where(data[:,0]== liste_saut[i])
+        loc = np.where(data[:, 0] == liste_saut[i])
         A[loc, i + 2 * len(periode) + 2] = 1
 
     return A
@@ -178,13 +155,9 @@ def matriceNormaleLigne(A, P):
     :param P: Matrice de poids P
     :return: matrice carrée de la longueur de A
     """
-    N = np.zeros((len(A[0]), len(A[0])))
-    for i in range(len(A)):
-        ta = A[i,:].transpose()
-        a = A[i,:]
-        p = P[i][i]
-        pa = np.dot(P[i][i], A[i,:])
-        N += np.dot(ta, pa)
+    at = A.reshape((len(A), 1))
+    A = A.reshape(1, len(A))
+    N = np.dot(at, np.dot(P, A))
     return N
 
 
@@ -196,10 +169,56 @@ def vecteurKligne(A, P, B):
     :param B:  observation
     :return: matrice composé d'un élément unique
     """
-    K = np.zeros((len(A), 1))
-    for i in range:
-        K += 1
+    at = A.reshape((len(A), 1))
+
+    K = at * P * B
+    return K
 
 
-#data = frm.formatage('../DataIGS08/ABPO_igs.xyz')
-#print(moindreCarres(data, [365.25,182.625]),False)
+
+
+def moindreCarres(data,periode,covariance=False):
+    """
+    Renvoie le résultat d'un traitement par moindre carrés d'un jeu de données formaté par la méthode formatage.
+    Les parametres d'entrée sont envoyés par la fonction traitement.
+    :param data: jeu de données comprenant date série E N U  et écarts type sur ces coordonnées.
+    :param covariance: Matrice de covariance supplémentaire dans le cadre de param^tre extérieures  intervnant sur la donnée mesurée
+    :param periode: périodes influencant la donnée, celles-ci peuvent etre multiple ( a entrer sous forme de liste)
+    :type data: numpy.array
+    :type covariance:numpy.array
+    :type periode : list
+    """
+    t0 = np.mean(data[:, 1])
+    resultat = [t0]
+
+    # premier traitement avec un axe, on comence par la creation de matrice
+    be = matriceB(data,"East")
+    # pour la date de référence, on prend cette dernière au milieu du jeu de données
+    a = matriceA(data, t0, periode)
+    pe = matriceP(data, "East", covariance)
+
+
+    #on traite  un premier axe une première fois pour initialiser une liste de point faux
+    point_faux=moindreCarres_iter(data,periode,t0,a,be,pe,[])[1]
+    #on itère jusqu'à ce qu'il n'y ai plus de points faux
+    res=0
+    for i in point_faux:
+        res= moindreCarres_iter(data,periode,t0,a,be,pe,point_faux)[0]
+    resultat.append(res)
+    #on redéfini les matrices pour les deux autres axes
+    bn=matriceB(data,'North')
+    bu=matriceB(data,'Up')
+    pn=matriceP(data,'North')
+    pu=matriceP(data,'Up')
+    res=0
+    for i in point_faux:
+        res= moindreCarres_iter(data,periode,t0,a,bn,pn,point_faux)[0]
+    resultat.append(res)
+    res=0
+    for i in point_faux:
+        res= moindreCarres_iter(data,periode,t0,a,bu,pu,point_faux)[0]
+
+    resultat.append(res)
+    return resultat
+
+
