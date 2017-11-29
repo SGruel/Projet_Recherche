@@ -88,10 +88,10 @@ def test_ls(a, b, c, d):
         return x[0] + x[1]*t + x[2]*t**2 + x[3]*t**3 - pos
 
     x0 = [a+np.random.random(), b+np.random.random(), c+np.random.random(), d+np.random.random()*0.1]
-    t = np.arange(0,10000,1)
+    t = np.arange(0,100,0.01)
     pos = []
     for i in t:
-        pos.append(a + b*i + c*i**2 + d*i**3 + np.random.random())
+        pos.append(a + b*i + c*i**2 + d*i**3 + np.random.normal(0,1))
     pos = np.array(pos)
 
     test = least_squares(squares, x0, loss='huber', args=(t, pos))

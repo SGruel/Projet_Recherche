@@ -43,6 +43,7 @@ def graphiqueUnique(link):
     py.ylabel("Vitesse sur l'axe E en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MC\\" + link[-12:-8] + "_E")
+    py.close()
 
     # figure de la vitesse sur l'axe N
     py.figure(1)
@@ -53,6 +54,7 @@ def graphiqueUnique(link):
     py.ylabel("Vitesse sur l'axe N en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MC\\" + link[-12:-8] + "_N")
+    py.close()
 
     # figure de la vitesse sur l'axe h
     py.figure(2)
@@ -63,6 +65,7 @@ def graphiqueUnique(link):
     py.ylabel("Vitesse sur l'axe h en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MC\\" + link[-12:-8] + "_h")
+    py.close()
 
 
 def graphiqueMidas(link):
@@ -92,7 +95,6 @@ def graphiqueMidas(link):
 
     #pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesure:
-        print(i)
         data = formatage(link, nb_jour = i)
         vitesseMidas = globalMidas(data)
         vitesseMidas_E.append(vitesseMidas[0][0])
@@ -103,7 +105,7 @@ def graphiqueMidas(link):
         ecartype_h.append(vitesseMidas[1][2])
 
     #figure avec les vitesses sur chaque axes
-    py.figure(0)
+    py.figure(3)
 
     py.plot(nb_mesure, vitesseMidas_E, 'g', label="vitesse sur l'axe E")
     py.plot(nb_mesure, vitesseMidas_N, 'r', label="vitesse sur l'axe N")
@@ -112,9 +114,10 @@ def graphiqueMidas(link):
     py.ylabel("Vitesse en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MIDAS\\" + link[-12:-8] + "_vitesse")
+    py.close()
 
     #figure avec les écart-types de la mesures des vitesses
-    py.figure(1)
+    py.figure(4)
 
     py.plot(nb_mesure, ecartype_E, 'g', label="ecart-type sur l'axe E")
     py.plot(nb_mesure, ecartype_N, 'r', label="ecart-type sur l'axe N")
@@ -123,6 +126,8 @@ def graphiqueMidas(link):
     py.ylabel("Ecart-type en fonction du nombre de jour de mesure (m/j)")
     py.legend()
     py.savefig("..\\graph\\MIDAS\\" + link[-12:-8] + "_ecart_type")
+    py.close()
+
 
 def graphiqueData(link):
     """
@@ -139,29 +144,33 @@ def graphiqueData(link):
     N = data[:,3]
     h = data[:,4]
 
-    py.figure(0)
+    py.figure(5)
 
     py.plot(t, E, 'g', label='position sur E')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\position\\" + link[-12:-8] + "_E")
+    py.close()
 
-    py.figure(1)
+    py.figure(6)
 
     py.plot(t, N, 'g', label='position sur N')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\position\\" + link[-12:-8] + "_N")
+    py.close()
 
-    py.figure(2)
+    py.figure(7)
 
     py.plot(t, h, 'g', label='position sur h')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\position\\" + link[-12:-8] + "_h")
+    py.close()
+
 
 def graphiqueTot(link):
     """
@@ -187,7 +196,6 @@ def graphiqueTot(link):
     E_mc = []
     N_mc = []
     h_mc = []
-    print(MC)
     for i in range(len(data)):
         E_midas.append(data[0][2] + vitesseMidas[0][0]*(data[i][1] - data[0][1]))
         N_midas.append(data[0][3] + vitesseMidas[0][1]*(data[i][1] - data[0][1]))
@@ -197,7 +205,7 @@ def graphiqueTot(link):
         h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
 
 
-    py.figure(0)
+    py.figure(8)
 
     py.plot(t, E, 'g', label='position sur E')
     py.plot(t, E_midas, 'r', label='position sur E prédit par MIDAS')
@@ -206,8 +214,9 @@ def graphiqueTot(link):
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_E")
+    py.close()
 
-    py.figure(1)
+    py.figure(9)
 
     py.plot(t, N, 'g', label='position sur N')
     py.plot(t, N_midas, 'r', label='position sur N prédit par MIDAS')
@@ -216,8 +225,9 @@ def graphiqueTot(link):
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_N")
+    py.close()
 
-    py.figure(2)
+    py.figure(10)
 
     py.plot(t, h, 'g', label='position sur h')
     py.plot(t, h_midas, 'r', label='position sur h prédit par MIDAS')
@@ -226,6 +236,7 @@ def graphiqueTot(link):
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_h")
+    py.close()
 
 def graphiqueCompMC(link):
     """
@@ -251,7 +262,6 @@ def graphiqueCompMC(link):
     N_mc = []
     h_mc = []
     t0 = np.mean(data[:,1])
-    print(MC)
     for i in range(len(data)):
         E_test.append(r[0].x[0] + r[0].x[1]*(data[i][1] - t0) + r[0].x[2]*np.cos((data[i][1] - t0)/365.25) + r[0].x[3]*np.sin((data[i][1] - t0)/365.25) + r[0].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[0].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
         N_test.append(r[1].x[0] + r[1].x[1]*(data[i][1] - t0) + r[1].x[2]*np.cos((data[i][1] - t0)/365.25) + r[1].x[3]*np.sin((data[i][1] - t0)/365.25) + r[1].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[1].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
@@ -260,7 +270,7 @@ def graphiqueCompMC(link):
         N_mc.append(MC[2][1][0] + MC[2][2][0]*(data[i][1] - MC[0]) + MC[2][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[2][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[2][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[2][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
         h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
 
-    py.figure(0)
+    py.figure(12)
 
     py.plot(t, E, 'g', label='position sur E')
     py.plot(t, E_test, 'r', label='position sur E scipy')
@@ -269,8 +279,9 @@ def graphiqueCompMC(link):
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_E")
+    py.close()
 
-    py.figure(1)
+    py.figure(13)
 
     py.plot(t, N, 'g', label='position sur N')
     py.plot(t, N_test, 'r', label='position sur N prédit par scipy')
@@ -279,8 +290,9 @@ def graphiqueCompMC(link):
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_N")
+    py.close()
 
-    py.figure(2)
+    py.figure(14)
 
     py.plot(t, h, 'g', label='position sur h')
     py.plot(t, h_test, 'r', label='position sur h prédit par scipy')
@@ -289,3 +301,4 @@ def graphiqueCompMC(link):
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
     py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_h")
+    py.close()
