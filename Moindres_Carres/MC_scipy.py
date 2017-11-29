@@ -2,6 +2,16 @@ from scipy.optimize import least_squares
 import numpy as np
 
 def delta(x):
+    """
+    Focntion qui gère un flottant ou une liste de flottant et qui renvoit 1 si le nombre est positif, 0 sinon.
+    Correspond à une fonction escalier.
+
+    :param x: l'argument de notre fonction escalier
+    :type x: float ou liste
+    :return: le résultat de la fonction escalier sur l'entrée
+    :type return: float ou liste, du même type que l'entrée
+    """
+    #on différentie le cas ou on traite une liste et le cas ou on traite un nombre
     if type(x) == type(np.array(1)):
         l = []
         for i in x:
@@ -18,6 +28,15 @@ def delta(x):
             return 1
 
 def test_MC(data):
+    """
+    Fonction qui teste un module de moindres carrés robuste de scipy sur nos séries de mesures traité.
+    On défini la fonction qui correspond au problème et on l'utilise dans la fonction de moindres carrés robuste.
+
+    :param data: données formatées par notre fonction formatage localisée dans le dossier Traitement
+    :type data: np.array (n,8)
+    :return: le résultat de la fonction least_squares sur les trois coordonnées
+    :type return: liste de 3 return de la fonction least_squares
+    """
     def fun(x, t, t0, saut, pos):
         T = 365.25
         total_saut = 0
@@ -60,11 +79,16 @@ def test_MC(data):
     return [res_robust_E, res_robust_N, res_robust_h]
 
 def test_ls(a, b, c, d):
+    """
+    Fonction de test de la fonction least_squares sur un polynome du troisième degré
+
+    :return: le résultat de la fonction least_squares
+    """
     def squares(x, t, pos):
         return x[0] + x[1]*t + x[2]*t**2 + x[3]*t**3 - pos
 
     x0 = [a+np.random.random(), b+np.random.random(), c+np.random.random(), d+np.random.random()*0.1]
-    t = np.arange(0,1000,1)
+    t = np.arange(0,10000,1)
     pos = []
     for i in t:
         pos.append(a + b*i + c*i**2 + d*i**3 + np.random.random())
@@ -75,6 +99,11 @@ def test_ls(a, b, c, d):
     return test
 
 def test_saut_ls(a, b, c, d, e):
+    """
+    Fonction de test de la fonction least_squares sur un polynome du quatrième degré avec un saut au milieu de la série
+
+    :return: le résultat de la fonction least_squares
+    """
     def up(x, t, pos):
         sum = 0
         for i in [2,3,4]:

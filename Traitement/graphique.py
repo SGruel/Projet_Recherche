@@ -8,11 +8,11 @@ from Moindres_Carres.MC_scipy import test_MC
 def graphiqueUnique(link):
     """
     Fonction qui va analyser un fichier .xyz pour sortir des graphiques sur l'évolution de la vitesse calculer par
-    moindres carrées en fonction du temps et comparer cela avec la vitesse obtenue avec la méthode MIDAS
+    moindres carrées en fonction du temps et comparer cela avec la vitesse obtenue avec la méthode MIDAS.
+    Elle les enregistre dans le fichier dédié.
 
     :param link: chemin vers le fichier .xyz
     :type link: str
-    :return:
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
@@ -66,6 +66,14 @@ def graphiqueUnique(link):
 
 
 def graphiqueMidas(link):
+    """
+    Fonction qui va analyser un fichier .xyz pour sortir des graphiques sur l'évolution de la vitesse calculer par
+    la méthode MIDAS en fonction du nombre de jour de mesure.
+    Elle les enregistre dans le fichier dédié.
+
+    :param link: chemin vers le fichier .xyz
+    :type link: str
+    """
     data = formatage(link)
 
     #les listes que l'on affichera ensuite
@@ -117,6 +125,13 @@ def graphiqueMidas(link):
     py.savefig("..\\graph\\MIDAS\\" + link[-12:-8] + "_ecart_type")
 
 def graphiqueData(link):
+    """
+    Fonction qui affiche la position d'un jeu de données sur les trois axes de coordonnées.
+    Elle les enregistre dans le fichier dédié.
+
+    :param link: chemin vers le fichier .xyz
+    :type link: str
+    """
     data = formatage(link)
 
     t = data[:,1]
@@ -149,6 +164,14 @@ def graphiqueData(link):
     py.savefig("..\\graph\\position\\" + link[-12:-8] + "_h")
 
 def graphiqueTot(link):
+    """
+    Fonction qui affiche la position d'un jeu de données sur les trois axes de coordonnées.
+    Il affiche en plus la position prédit par les moindres carrées et par MIDAS
+    Elle les enregistre dans le fichier dédié.
+
+    :param link: chemin vers le fichier .xyz
+    :type link: str
+    """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
     MC = moindreCarres(data, [365.25, 365.25/2])
@@ -205,6 +228,13 @@ def graphiqueTot(link):
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_h")
 
 def graphiqueCompMC(link):
+    """
+    Fonction qui la position prédit par les moindres carrées et par la fonction least_squares de scipy
+    Elle les enregistre dans le fichier dédié.
+
+    :param link: chemin vers le fichier .xyz
+    :type link: str
+    """
     data = formatage(link)
     MC = moindreCarres(data, [365.25, 365.25/2])
     r = test_MC(data)
