@@ -16,10 +16,10 @@ def graphiqueUnique(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    liste_MC_final = moindreCarres(data)
+    liste_MC_final = moindreCarres(data, [365.25, 365.25/2])
 
     #une liste avec un pas régulier pour afficher en fonction du nombre de mesure
-    nb_mesures = np.arange(50, len(data), 50)
+    nb_mesures = np.arange(350, len(data), 50)
 
     # les listes que l'on affichera ensuite
     vitesse_E = []
@@ -27,9 +27,9 @@ def graphiqueUnique(link):
     vitesse_h = []
 
     # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
-    for i in nb_mesure:
+    for i in nb_mesures:
         data = formatage(link, nb_jour = i)
-        liste_MC = moindresCarres(data)
+        liste_MC = moindreCarres(data, [365.25, 365.25/2])
         vitesse_E.append(liste_MC[1][2][0])
         vitesse_N.append(liste_MC[2][2][0])
         vitesse_h.append(liste_MC[3][2][0])
@@ -48,7 +48,7 @@ def graphiqueUnique(link):
     py.figure(1)
 
     py.plot(nb_mesures, vitesse_N, 'g', label='vitesse moindres carrées sur N')
-    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[1][0]], 'r', label='vitesse MIDAS sur N')
+    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[0][1]], 'r', label='vitesse MIDAS sur N')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe N en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -58,7 +58,7 @@ def graphiqueUnique(link):
     py.figure(2)
 
     py.plot(nb_mesures, vitesse_h, 'g', label='vitesse moindres carrées sur h')
-    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[2][0]], 'r', label='vitesse MIDAS sur h')
+    py.plot(nb_mesures, len(nb_mesures) * [vitesseMidas[0][2]], 'r', label='vitesse MIDAS sur h')
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Vitesse sur l'axe h en fonction du nombre de jour de mesure (m/j)")
     py.legend()
@@ -232,6 +232,7 @@ def graphiqueCompMC(link):
 
     py.figure(0)
 
+    py.plot(t, E, 'g', label='position sur E')
     py.plot(t, E_test, 'r', label='position sur E scipy')
     py.plot(t, E_mc, 'b', label='position sur E predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
@@ -241,6 +242,7 @@ def graphiqueCompMC(link):
 
     py.figure(1)
 
+    py.plot(t, N, 'g', label='position sur N')
     py.plot(t, N_test, 'r', label='position sur N prédit par scipy')
     py.plot(t, N_mc, 'b', label='position sur N predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
@@ -250,6 +252,7 @@ def graphiqueCompMC(link):
 
     py.figure(2)
 
+    py.plot(t, h, 'g', label='position sur h')
     py.plot(t, h_test, 'r', label='position sur h prédit par scipy')
     py.plot(t, h_mc, 'b', label='position sur h predit par les paramètres moindres carrés')
     py.xlabel("Temps en jour de mesure (j)")
