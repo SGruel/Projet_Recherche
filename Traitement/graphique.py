@@ -255,7 +255,7 @@ def graphiqueCompMC(link):
         P[i,i] = 1
 
     t1 = time.time()
-    MC = moindreCarres(data, [365.25, 365.25/2], covariance=P)
+    MC = moindreCarres(data, [365.25, 365.25/2])
     t2 = time.time()
     print("temps Simeon " + str(t2-t1))
     r = test_MC(data)

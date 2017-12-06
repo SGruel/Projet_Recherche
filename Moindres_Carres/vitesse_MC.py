@@ -212,16 +212,17 @@ def moindreCarres(data,periode,covariance=False,extend=False,robust=False):
         #on traite  un premier axe une première fois pour initialiser une liste de point faux
         point_faux=moindreCarres_iter(data,a,be,pe,[])[1]
         #on itère jusqu'à ce qu'il n'y ai plus de points faux
-        res=0
+        res=moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
         for i in point_faux:
             res= moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
         resultat.append(res)
 
-        res=0
+        res=moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
         for i in point_faux:
            res= moindreCarres_iter(data,a,bn,pn,point_faux,extend= extend)[0]
         resultat.append(res)
-        res=0
+
+        res=moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
         for i in point_faux:
             res= moindreCarres_iter(data,a,bu,pu,point_faux,extend =extend)[0]
 
