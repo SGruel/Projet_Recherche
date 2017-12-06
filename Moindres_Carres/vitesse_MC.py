@@ -199,10 +199,6 @@ def moindreCarres(data,periode,covariance=False,extend=False):
     a = matriceA(data, t0, periode)
     pe = matriceP(data, "East", covariance)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> a2ace04c018b14e5b2f5e87e96421055ca865a1a
     #on traite  un premier axe une première fois pour initialiser une liste de point faux
     point_faux=moindreCarres_iter(data,a,be,pe,[])[1]
     #on itère jusqu'à ce qu'il n'y ai plus de points faux
