@@ -27,7 +27,7 @@ def delta(x):
         else:
             return 1
 
-def test_MC(data, robust=false):
+def test_MC(data, robust=False):
     """
     Fonction qui teste un module de moindres carrés robuste de scipy sur nos séries de mesures traité.
     On défini la fonction qui correspond au problème et on l'utilise dans la fonction de moindres carrés robuste.

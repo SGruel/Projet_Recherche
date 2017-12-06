@@ -17,8 +17,6 @@ E = data[:,2]
 residu_sc = a[0].fun
 residu_mc = b[2][len(b[2])-1]
 
-print(residu_mc)
-
 py.figure(0)
 #py.plot(t, E, 'g', label='position sur E')
 py.plot(t, E + residu_sc, 'r', label='position sur E prédit par scipy')
