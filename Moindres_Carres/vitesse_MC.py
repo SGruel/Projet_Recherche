@@ -14,10 +14,6 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
     :return:
     """
 
-
-
-
-
     # on calcul la matrice normale avec un traitement par ligne de meme pour le vecteur constant
 
     N = np.zeros((len(a[0]), len(a[0])))
@@ -199,7 +195,6 @@ def moindreCarres(data,periode,covariance=False,extend=False,robust=False):
     # pour la date de référence, on prend cette dernière au milieu du jeu de données
     a = matriceA(data, t0, periode)
     pe = matriceP(data, "East", covariance)
-<<<<<<< HEAD
 
     #on traite  un premier axe une première fois pour initialiser une liste de point faux
     point_faux=moindreCarres_iter(data,a,be,pe,[])[1]
@@ -208,8 +203,6 @@ def moindreCarres(data,periode,covariance=False,extend=False,robust=False):
     for i in point_faux:
         res= moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
     resultat.append(res)
-=======
->>>>>>> 0005f7331276c1b704cdd265e489649269dc1557
     #on redéfini les matrices pour les deux autres axes
     bn=matriceB(data,'North')
     bu=matriceB(data,'Up')
