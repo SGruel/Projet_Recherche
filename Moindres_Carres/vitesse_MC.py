@@ -3,15 +3,16 @@ import Traitement.formatage as frm
 import matplotlib.pyplot as plt
 import time
 
-def moindreCarres_iter(data, periode,t0,a,b,p,pointsFaux,covariance=False):
+def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
     """
-    Effectue une iteration du traitement par moindre carrés, ajoutant un point faux à la liste si elle existe
-    :param data: donnée formatée
-    :param periode: période influent sur la série
-    :param t0: temps moyen de la série
-    :param axe: axe sur lequel on traite les moindres carrés
-    :param pointsFaux: liste des point faux
-    :param covariance: matrice de covariance optionelle
+
+    :param data: donnée forma
+    :param a:
+    :param b:
+    :param p:
+    :param pointsFaux:
+    :param covariance:
+    :param extend:
     :return:
     """
 
@@ -61,7 +62,8 @@ def moindreCarres_iter(data, periode,t0,a,b,p,pointsFaux,covariance=False):
     res = [sigma2]
     for i in range(len(X)):
         res.append([X[i], np.sqrt(covX[i][i])])
-
+    if extend== True:
+        res.append([V,b-V])
     return [res,pointsFaux]
 
 
@@ -142,11 +144,9 @@ def matriceP(data, axe, covariance=False):
         indice = 5
     else:
         indice = 7
-    if type(covariance) == type(True) and covariance == False:
+    if covariance == False:
         di = np.diag_indices_from(P)
         P[di] = 1 / data[:, indice] ** 2
-    else:
-        P = covariance
     return P
 
 
@@ -179,7 +179,7 @@ def vecteurKligne(A, P, B):
 
 
 
-def moindreCarres(data,periode, P=0, covariance=False):
+def moindreCarres(data,periode,covariance=False,extend=False):
     """
     Renvoie le résultat d'un traitement par moindre carrés d'un jeu de données formaté par la méthode formatage.
     Les parametres d'entrée sont envoyés par la fonction traitement.
@@ -199,12 +199,16 @@ def moindreCarres(data,periode, P=0, covariance=False):
     a = matriceA(data, t0, periode)
     pe = matriceP(data, "East", covariance)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a2ace04c018b14e5b2f5e87e96421055ca865a1a
     #on traite  un premier axe une première fois pour initialiser une liste de point faux
-    point_faux=moindreCarres_iter(data,periode,t0,a,be,pe,[])[1]
+    point_faux=moindreCarres_iter(data,a,be,pe,[])[1]
     #on itère jusqu'à ce qu'il n'y ai plus de points faux
     res=0
     for i in point_faux:
-        res= moindreCarres_iter(data,periode,t0,a,be,pe,point_faux)[0]
+        res= moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
     resultat.append(res)
     #on redéfini les matrices pour les deux autres axes
     bn=matriceB(data,'North')
@@ -213,11 +217,11 @@ def moindreCarres(data,periode, P=0, covariance=False):
     pu=matriceP(data,'Up')
     res=0
     for i in point_faux:
-        res= moindreCarres_iter(data,periode,t0,a,bn,pn,point_faux)[0]
+        res= moindreCarres_iter(data,a,bn,pn,point_faux,extend= extend)[0]
     resultat.append(res)
     res=0
     for i in point_faux:
-        res= moindreCarres_iter(data,periode,t0,a,bu,pu,point_faux)[0]
+        res= moindreCarres_iter(data,a,bu,pu,point_faux,extend =extend)[0]
 
     resultat.append(res)
     return resultat
