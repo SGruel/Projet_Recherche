@@ -142,9 +142,11 @@ def matriceP(data, axe, covariance=False):
         indice = 5
     else:
         indice = 7
-    if covariance == False:
+    if type(covariance) == type(True) and covariance == False:
         di = np.diag_indices_from(P)
         P[di] = 1 / data[:, indice] ** 2
+    else:
+        P = covariance
     return P
 
 
@@ -177,7 +179,7 @@ def vecteurKligne(A, P, B):
 
 
 
-def moindreCarres(data,periode,covariance=False):
+def moindreCarres(data,periode, P=0, covariance=False):
     """
     Renvoie le résultat d'un traitement par moindre carrés d'un jeu de données formaté par la méthode formatage.
     Les parametres d'entrée sont envoyés par la fonction traitement.
@@ -197,7 +199,16 @@ def moindreCarres(data,periode,covariance=False):
     a = matriceA(data, t0, periode)
     pe = matriceP(data, "East", covariance)
 
-
+    res = [t0]
+    res.append(moindreCarres_iter(data, periode, t0, a, be, pe, [])[0])
+    bn = matriceB(data, 'North')
+    bu = matriceB(data, 'Up')
+    pn = matriceP(data, 'North')
+    pu = matriceP(data, 'Up')
+    res.append(moindreCarres_iter(data, periode, t0, a, bn, pn, [])[0])
+    res.append(moindreCarres_iter(data, periode, t0, a, bu, pu, [])[0])
+    return res
+    """
     #on traite  un premier axe une première fois pour initialiser une liste de point faux
     point_faux=moindreCarres_iter(data,periode,t0,a,be,pe,[])[1]
     #on itère jusqu'à ce qu'il n'y ai plus de points faux
@@ -220,5 +231,5 @@ def moindreCarres(data,periode,covariance=False):
 
     resultat.append(res)
     return resultat
-
+"""
 

@@ -250,9 +250,12 @@ def graphiqueCompMC(link):
     :type link: str
     """
     data = formatage(link)
+    P = np.zeros((len(data), len(data)))
+    for i in range(len(data)):
+        P[i,i] = 1
 
     t1 = time.time()
-    MC = moindreCarres(data, [365.25, 365.25/2])
+    MC = moindreCarres(data, [365.25, 365.25/2], covariance=P)
     t2 = time.time()
     print("temps Simeon " + str(t2-t1))
     r = test_MC(data)
@@ -287,7 +290,7 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_E")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_E")
     py.close()
 
     py.figure(13)
@@ -298,7 +301,7 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_N")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_N")
     py.close()
 
     py.figure(14)
@@ -309,5 +312,5 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_h")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_h")
     py.close()
