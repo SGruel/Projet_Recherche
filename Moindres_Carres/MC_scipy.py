@@ -27,7 +27,7 @@ def delta(x):
         else:
             return 1
 
-def test_MC(data):
+def test_MC(data, robust=false):
     """
     Fonction qui teste un module de moindres carrés robuste de scipy sur nos séries de mesures traité.
     On défini la fonction qui correspond au problème et on l'utilise dans la fonction de moindres carrés robuste.
@@ -89,9 +89,14 @@ def test_MC(data):
     t0 = np.array(len(t) * [np.mean(data[:,1])])
     saut = np.array(len(t) * [saut])
 
-    res_robust_E = least_squares(fun, x0_E, args=(t, t0, saut, pos_E))
-    res_robust_N = least_squares(fun, x0_N, args=(t, t0, saut, pos_N))
-    res_robust_h = least_squares(fun, x0_h, args=(t, t0, saut, pos_h))
+    if robust:
+        res_robust_E = least_squares(fun, x0_E, loss='huber', args=(t, t0, saut, pos_E))
+        res_robust_N = least_squares(fun, x0_N, loss='huber', args=(t, t0, saut, pos_N))
+        res_robust_h = least_squares(fun, x0_h, loss='huber', args=(t, t0, saut, pos_h))
+    else:
+        res_robust_E = least_squares(fun, x0_E, args=(t, t0, saut, pos_E))
+        res_robust_N = least_squares(fun, x0_N, args=(t, t0, saut, pos_N))
+        res_robust_h = least_squares(fun, x0_h, args=(t, t0, saut, pos_h))
 
     return [res_robust_E, res_robust_N, res_robust_h]
 
