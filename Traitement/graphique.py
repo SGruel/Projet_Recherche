@@ -1,5 +1,6 @@
 import pylab as py
 import numpy as np
+import time
 from Traitement.formatage import formatage
 from MIDAS.vitesseMidas import globalMidas
 from Moindres_Carres.vitesse_MC import moindreCarres
@@ -90,11 +91,13 @@ def graphiqueMidas(link):
     #on varie la longueur du pas pour faciliter le calcul
     nb1 = np.arange(50, 400, 10)
     nb2 = np.arange(400, 1000, 50)
-    nb3 = np.arange(1000, len(data) + 100, 100)
-    nb_mesure = np.concatenate((nb1, nb2, nb3), axis=0)
+    nb3 = np.arange(1000, min(len(data),1900) + 100, 100)
+    nb4 = np.arange(2000, len(data), 200)
+    nb_mesure = np.concatenate((nb1, nb2, nb3, nb4), axis=0)
 
     #pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesure:
+        print(i)
         data = formatage(link, nb_jour = i)
         vitesseMidas = globalMidas(data)
         vitesseMidas_E.append(vitesseMidas[0][0])
@@ -247,8 +250,17 @@ def graphiqueCompMC(link):
     :type link: str
     """
     data = formatage(link)
-    MC = moindreCarres(data, [365.25, 365.25/2])
+    P = np.zeros((len(data), len(data)))
+    for i in range(len(data)):
+        P[i,i] = 1
+
+    t1 = time.time()
+    MC = moindreCarres(data, [365.25, 365.25/2], covariance=P)
+    t2 = time.time()
+    print("temps Simeon " + str(t2-t1))
     r = test_MC(data)
+    t3 = time.time()
+    print("temps ordi " + str(t3-t2))
 
     t = data[:, 1]
     E = data[:, 2]
@@ -278,7 +290,7 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe E en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_E")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_E")
     py.close()
 
     py.figure(13)
@@ -289,7 +301,7 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe N en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_N")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_N")
     py.close()
 
     py.figure(14)
@@ -300,5 +312,5 @@ def graphiqueCompMC(link):
     py.xlabel("Temps en jour de mesure (j)")
     py.ylabel("Position sur l'axe h en fonction du nombre de jour de mesure (m)")
     py.legend()
-    py.savefig("..\\graph\\comparaison\\" + link[-12:-8] + "_h")
+    py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_h")
     py.close()
