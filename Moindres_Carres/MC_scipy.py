@@ -37,24 +37,39 @@ def test_MC(data):
     :return: le résultat de la fonction least_squares sur les trois coordonnées
     :type return: liste de 3 return de la fonction least_squares
     """
-    def fun(x, t, t0, s1, s2, s3, s4, s5, pos):
+
+    def fun(x, t, t0, saut, pos):
+        """
+
+
+        :param x: vecteur des paramètres à estimer
+        :param t: vecteur temps
+        :param t0: veteur uniforme contenant le temps origine
+        :param saut: vecteur temps des différents sauts
+        :param pos: vecteur position au temps donné
+        :return:
+        """
         T = 365.25
-        saut1 = x[6] * delta(t - s1)
-        saut2 = x[7] * delta(t - s2)
-        saut3 = x[8] * delta(t - s3)
-        saut4 = x[9] * delta(t - s4)
-        saut5 = x[10] * delta(t - s5)
-        return x[0] + x[1] * (t - t0) + x[2] * np.cos((t - t0) / T) + x[3] * np.sin((t - t0) / T) + x[4] * \
-                np.cos(2 * (t - t0) / T) + x[5] * np.sin(2 * (t - t0) / T) + saut1 + saut2 + saut3 + saut4 + saut5 - pos
+        A = np.zeros((len(t), 6+saut.shape[1]))
+        for i in range(len(A)):
+            A[i][0] = 1
+        A[: ,1] = t - t0
+        A[: ,2] = np.cos((t - t0) / T)
+        A[: ,3] = np.sin((t - t0) / T)
+        A[: ,4] = np.cos(2 * (t - t0) / T)
+        A[: ,5] = np.sin(2 * (t - t0) / T)
+        for i in range(6, A.shape[1]):
+            A[: ,i] = delta(t - saut[0][i-6])
+        return np.dot(A,x)-pos
 
     compt = 0
     for i in range(1,len(data)):
         if data[i][0] != data[i-1][0]:
             compt += 1
 
-    x0_E = np.concatenate((np.array([data[0][2], (data[0][2]-data[-1][2])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(5*[0])), axis=0)
-    x0_N = np.concatenate((np.array([data[0][3], (data[0][3]-data[-1][3])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(5*[0])), axis=0)
-    x0_h = np.concatenate((np.array([data[0][4], (data[0][4]-data[-1][4])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(5*[0])), axis=0)
+    x0_E = np.concatenate((np.array([data[0][2], (data[0][2]-data[-1][2])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
+    x0_N = np.concatenate((np.array([data[0][3], (data[0][3]-data[-1][3])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
+    x0_h = np.concatenate((np.array([data[0][4], (data[0][4]-data[-1][4])/(data[0][1]-data[-1][1]), 0, 0, 0, 0]), np.array(compt*[0])), axis=0)
     t = []
     pos_E = []
     pos_N = []
@@ -67,22 +82,16 @@ def test_MC(data):
         pos_h.append(data[i][4])
         if i>0 and data[i][0]>data[i-1][0]:
             saut.append(data[i][1])
-    while len(saut) < 5:
-         saut.append(data[len(data)-1][1])
     t = np.array(t)
     pos_E = np.array(pos_E)
     pos_N = np.array(pos_N)
     pos_h = np.array(pos_h)
     t0 = np.array(len(t) * [np.mean(data[:,1])])
-    s1 = np.array(len(t) * [saut[0]])
-    s2 = np.array(len(t) * [saut[1]])
-    s3 = np.array(len(t) * [saut[2]])
-    s4 = np.array(len(t) * [saut[3]])
-    s5 = np.array(len(t) * [saut[4]])
+    saut = np.array(len(t) * [saut])
 
-    res_robust_E = least_squares(fun, x0_E, args=(t, t0, s1, s2, s3, s4, s5, pos_E))
-    res_robust_N = least_squares(fun, x0_N, args=(t, t0, s1, s2, s3, s4, s5, pos_N))
-    res_robust_h = least_squares(fun, x0_h, args=(t, t0, s1, s2, s3, s4, s5, pos_h))
+    res_robust_E = least_squares(fun, x0_E, args=(t, t0, saut, pos_E))
+    res_robust_N = least_squares(fun, x0_N, args=(t, t0, saut, pos_N))
+    res_robust_h = least_squares(fun, x0_h, args=(t, t0, saut, pos_h))
 
     return [res_robust_E, res_robust_N, res_robust_h]
 

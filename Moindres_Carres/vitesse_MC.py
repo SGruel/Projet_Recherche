@@ -199,16 +199,6 @@ def moindreCarres(data,periode, P=0, covariance=False):
     a = matriceA(data, t0, periode)
     pe = matriceP(data, "East", covariance)
 
-    res = [t0]
-    res.append(moindreCarres_iter(data, periode, t0, a, be, pe, [])[0])
-    bn = matriceB(data, 'North')
-    bu = matriceB(data, 'Up')
-    pn = matriceP(data, 'North')
-    pu = matriceP(data, 'Up')
-    res.append(moindreCarres_iter(data, periode, t0, a, bn, pn, [])[0])
-    res.append(moindreCarres_iter(data, periode, t0, a, bu, pu, [])[0])
-    return res
-    """
     #on traite  un premier axe une première fois pour initialiser une liste de point faux
     point_faux=moindreCarres_iter(data,periode,t0,a,be,pe,[])[1]
     #on itère jusqu'à ce qu'il n'y ai plus de points faux
@@ -231,5 +221,3 @@ def moindreCarres(data,periode, P=0, covariance=False):
 
     resultat.append(res)
     return resultat
-"""
-
