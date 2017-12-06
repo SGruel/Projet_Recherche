@@ -6,9 +6,10 @@ from MIDAS.vitesseMidas import globalMidas
 from Moindres_Carres.vitesse_MC import moindreCarres
 from Moindres_Carres.MC_scipy import test_MC
 
+
 def graphiqueUnique(link):
     """
-    Fonction qui va analyser un fichier .xyz pour sortir des graphiques sur l'évolution de la vitesse calculer par
+    Fonction qui va analyser un fichier .xyz pour sortir des graphiques sur l'évolution de la vitesse calculée par
     moindres carrées en fonction du temps et comparer cela avec la vitesse obtenue avec la méthode MIDAS.
     Elle les enregistre dans le fichier dédié.
 
@@ -17,9 +18,9 @@ def graphiqueUnique(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    liste_MC_final = moindreCarres(data, [365.25, 365.25/2])
+    liste_MC_final = moindreCarres(data, [365.25, 365.25 / 2])
 
-    #une liste avec un pas régulier pour afficher en fonction du nombre de mesure
+    # une liste avec un pas régulier pour afficher en fonction du nombre de mesure
     nb_mesures = np.arange(350, len(data), 50)
 
     # les listes que l'on affichera ensuite
@@ -29,13 +30,13 @@ def graphiqueUnique(link):
 
     # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesures:
-        data = formatage(link, nb_jour = i)
-        liste_MC = moindreCarres(data, [365.25, 365.25/2])
+        data = formatage(link, nb_jour=i)
+        liste_MC = moindreCarres(data, [365.25, 365.25 / 2])
         vitesse_E.append(liste_MC[1][2][0])
         vitesse_N.append(liste_MC[2][2][0])
         vitesse_h.append(liste_MC[3][2][0])
 
-    #figure de la vitesse sur l'axe E
+    # figure de la vitesse sur l'axe E
     py.figure(0)
 
     py.plot(nb_mesures, vitesse_E, 'g', label='vitesse moindres carrées sur E')
@@ -80,25 +81,25 @@ def graphiqueMidas(link):
     """
     data = formatage(link)
 
-    #les listes que l'on affichera ensuite
+    # les listes que l'on affichera ensuite
     vitesseMidas_E = []
     vitesseMidas_N = []
     vitesseMidas_h = []
-    ecartype_E     = []
-    ecartype_N     = []
-    ecartype_h     = []
+    ecartype_E = []
+    ecartype_N = []
+    ecartype_h = []
 
-    #on varie la longueur du pas pour faciliter le calcul
+    # on varie la longueur du pas pour faciliter le calcul
     nb1 = np.arange(50, 400, 10)
     nb2 = np.arange(400, 1000, 50)
-    nb3 = np.arange(1000, min(len(data),1900) + 100, 100)
+    nb3 = np.arange(1000, min(len(data), 1900) + 100, 100)
     nb4 = np.arange(2000, len(data), 500)
     nb_mesure = np.concatenate((nb1, nb2, nb3, nb4), axis=0)
 
-    #pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
+    # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesure:
         print(i)
-        data = formatage(link, nb_jour = i)
+        data = formatage(link, nb_jour=i)
         vitesseMidas = globalMidas(data)
         vitesseMidas_E.append(vitesseMidas[0][0])
         ecartype_E.append(vitesseMidas[1][0])
@@ -107,7 +108,7 @@ def graphiqueMidas(link):
         vitesseMidas_h.append(vitesseMidas[0][2])
         ecartype_h.append(vitesseMidas[1][2])
 
-    #figure avec les vitesses sur chaque axes
+    # figure avec les vitesses sur chaque axes
     py.figure(3)
 
     py.plot(nb_mesure, vitesseMidas_E, 'g', label="vitesse sur l'axe E")
@@ -119,7 +120,7 @@ def graphiqueMidas(link):
     py.savefig("..\\graph\\MIDAS\\" + link[-12:-8] + "_vitesse")
     py.close()
 
-    #figure avec les écart-types de la mesures des vitesses
+    # figure avec les écart-types de la mesures des vitesses
     py.figure(4)
 
     py.plot(nb_mesure, ecartype_E, 'g', label="ecart-type sur l'axe E")
@@ -142,10 +143,10 @@ def graphiqueData(link):
     """
     data = formatage(link)
 
-    t = data[:,1]
-    E = data[:,2]
-    N = data[:,3]
-    h = data[:,4]
+    t = data[:, 1]
+    E = data[:, 2]
+    N = data[:, 3]
+    h = data[:, 4]
 
     py.figure(5)
 
@@ -186,7 +187,7 @@ def graphiqueTot(link):
     """
     data = formatage(link)
     vitesseMidas = globalMidas(data)
-    MC = moindreCarres(data, [365.25, 365.25/2])
+    MC = moindreCarres(data, [365.25, 365.25 / 2])
 
     t = data[:, 1]
     E = data[:, 2]
@@ -200,13 +201,21 @@ def graphiqueTot(link):
     N_mc = []
     h_mc = []
     for i in range(len(data)):
-        E_midas.append(data[0][2] + vitesseMidas[0][0]*(data[i][1] - data[0][1]))
-        N_midas.append(data[0][3] + vitesseMidas[0][1]*(data[i][1] - data[0][1]))
-        h_midas.append(data[0][4] + vitesseMidas[0][2]*(data[i][1] - data[0][1]))
-        E_mc.append(MC[1][1][0] + MC[1][2][0]*(data[i][1] - MC[0]) + MC[1][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[1][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[1][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[1][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
-        N_mc.append(MC[2][1][0] + MC[2][2][0]*(data[i][1] - MC[0]) + MC[2][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[2][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[2][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[2][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
-        h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
-
+        E_midas.append(data[0][2] + vitesseMidas[0][0] * (data[i][1] - data[0][1]))
+        N_midas.append(data[0][3] + vitesseMidas[0][1] * (data[i][1] - data[0][1]))
+        h_midas.append(data[0][4] + vitesseMidas[0][2] * (data[i][1] - data[0][1]))
+        E_mc.append(
+            MC[1][1][0] + MC[1][2][0] * (data[i][1] - MC[0]) + MC[1][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
+            MC[1][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[1][5][0] * np.cos(
+                2 * (data[i][1] - MC[0]) / 365.25) + MC[1][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
+        N_mc.append(
+            MC[2][1][0] + MC[2][2][0] * (data[i][1] - MC[0]) + MC[2][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
+            MC[2][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[2][5][0] * np.cos(
+                2 * (data[i][1] - MC[0]) / 365.25) + MC[2][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
+        h_mc.append(
+            MC[3][1][0] + MC[3][2][0] * (data[i][1] - MC[0]) + MC[3][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
+            MC[3][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[3][5][0] * np.cos(
+                2 * (data[i][1] - MC[0]) / 365.25) + MC[3][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
 
     py.figure(8)
 
@@ -241,7 +250,8 @@ def graphiqueTot(link):
     py.savefig("..\\graph\\prediction\\" + link[-12:-8] + "_h")
     py.close()
 
-def graphiqueCompMC(link):
+
+def graphiqueCompMC(link, periode, robust=False):
     """
     Fonction qui la position prédit par les moindres carrées et par la fonction least_squares de scipy
     Elle les enregistre dans le fichier dédié.
@@ -252,35 +262,30 @@ def graphiqueCompMC(link):
     data = formatage(link)
     P = np.zeros((len(data), len(data)))
     for i in range(len(data)):
-        P[i,i] = 1
+        P[i, i] = 1
 
     t1 = time.time()
-    MC = moindreCarres(data, [365.25, 365.25/2], covariance=P)
+    MC = moindreCarres(data, periode, robust=robust,extend=True)
     t2 = time.time()
-    print("temps Simeon " + str(t2-t1))
+    print("temps Simeon " + str(t2 - t1))
     r = test_MC(data)
     t3 = time.time()
-    print("temps ordi " + str(t3-t2))
+    print("temps ordi " + str(t3 - t2))
 
     t = data[:, 1]
     E = data[:, 2]
     N = data[:, 3]
     h = data[:, 4]
 
-    E_test = []
-    N_test = []
-    h_test = []
-    E_mc = []
-    N_mc = []
-    h_mc = []
-    t0 = np.mean(data[:,1])
-    for i in range(len(data)):
-        E_test.append(r[0].x[0] + r[0].x[1]*(data[i][1] - t0) + r[0].x[2]*np.cos((data[i][1] - t0)/365.25) + r[0].x[3]*np.sin((data[i][1] - t0)/365.25) + r[0].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[0].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
-        N_test.append(r[1].x[0] + r[1].x[1]*(data[i][1] - t0) + r[1].x[2]*np.cos((data[i][1] - t0)/365.25) + r[1].x[3]*np.sin((data[i][1] - t0)/365.25) + r[1].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[1].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
-        h_test.append(r[2].x[0] + r[2].x[1]*(data[i][1] - t0) + r[2].x[2]*np.cos((data[i][1] - t0)/365.25) + r[2].x[3]*np.sin((data[i][1] - t0)/365.25) + r[2].x[4]*np.cos(2*(data[i][1] - t0)/365.25) + r[2].x[5]*np.sin(2*(data[i][1] - t0)/365.25))
-        E_mc.append(MC[1][1][0] + MC[1][2][0]*(data[i][1] - MC[0]) + MC[1][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[1][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[1][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[1][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
-        N_mc.append(MC[2][1][0] + MC[2][2][0]*(data[i][1] - MC[0]) + MC[2][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[2][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[2][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[2][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
-        h_mc.append(MC[3][1][0] + MC[3][2][0]*(data[i][1] - MC[0]) + MC[3][3][0]*np.cos((data[i][1] - MC[0])/365.25) + MC[3][4][0]*np.sin((data[i][1] - MC[0])/365.25) + MC[3][5][0]*np.cos(2*(data[i][1] - MC[0])/365.25) + MC[3][6][0]*np.sin(2*(data[i][1] - MC[0])/365.25))
+    E_test = r[0].fun + E
+    N_test = r[1].fun + N
+    h_test = r[2].fun + h
+
+    t0 = np.mean(data[:, 1])
+
+    E_mc=MC[1][-1][1]
+    N_mc=MC[2][-1][1]
+    h_mc=MC[3][-1][1]
 
     py.figure(12)
 

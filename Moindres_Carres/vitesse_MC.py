@@ -1,15 +1,14 @@
 import numpy as np
 
 
-def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
+def moindreCarres_iter(data,a,b,p,pointsFaux,extend=False):
     """
 
     :param data: donnée forma
-    :param a:
+    :param a:matrice des paramêtres
     :param b:
     :param p:
-    :param pointsFaux:
-    :param covariance:
+    :param pointsFaux:liste des points faux trouvés par les précédentes itérations
     :param extend:
     :return:
     """
@@ -23,6 +22,7 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
     N = np.zeros((len(a[0]), len(a[0])))
     K = np.zeros((len(a[0]), 1))
     for i in range(len(a)):
+
         if i not in pointsFaux:
             Ni = matriceNormaleLigne(a[i], p[i, i])
             Ki = vecteurKligne(a[i, :], p[i][i], b[i])
@@ -44,7 +44,7 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
     max=-1
     ierr=-1
     for e in err:
-        if Vnorm[e]> max and e not  in pointsFaux:
+        if Vnorm[e]> max and e not in pointsFaux:
             max=Vnorm[e]
             ierr=e
     if max != -1:
@@ -61,7 +61,7 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,covariance=False,extend=False):
     for i in range(len(X)):
         res.append([X[i], np.sqrt(covX[i][i])])
     if extend== True:
-        res.append([V,b-V])
+        res.append([V,np.dot(a,X)])
     return [res,pointsFaux]
 
 
@@ -208,16 +208,17 @@ def moindreCarres(data,periode,covariance=False,extend=False,robust=False):
         #on traite  un premier axe une première fois pour initialiser une liste de point faux
         point_faux=moindreCarres_iter(data,a,be,pe,[])[1]
         #on itère jusqu'à ce qu'il n'y ai plus de points faux
-        res=0
+        res=moindreCarres_iter(data,a,be,pe,[])[0]
         for i in point_faux:
             res= moindreCarres_iter(data,a,be,pe,point_faux,extend=extend)[0]
         resultat.append(res)
 
-        res=0
+        res=moindreCarres_iter(data,a,bn,pn,point_faux,extend= extend)[0]
         for i in point_faux:
            res= moindreCarres_iter(data,a,bn,pn,point_faux,extend= extend)[0]
         resultat.append(res)
-        res=0
+
+        res=moindreCarres_iter(data,a,bu,pu,point_faux,extend =extend)[0]
         for i in point_faux:
             res= moindreCarres_iter(data,a,bu,pu,point_faux,extend =extend)[0]
 
