@@ -197,25 +197,10 @@ def graphiqueTot(link):
     E_midas = []
     N_midas = []
     h_midas = []
-    E_mc = []
-    N_mc = []
-    h_mc = []
-    for i in range(len(data)):
-        E_midas.append(data[0][2] + vitesseMidas[0][0] * (data[i][1] - data[0][1]))
-        N_midas.append(data[0][3] + vitesseMidas[0][1] * (data[i][1] - data[0][1]))
-        h_midas.append(data[0][4] + vitesseMidas[0][2] * (data[i][1] - data[0][1]))
-        E_mc.append(
-            MC[1][1][0] + MC[1][2][0] * (data[i][1] - MC[0]) + MC[1][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
-            MC[1][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[1][5][0] * np.cos(
-                2 * (data[i][1] - MC[0]) / 365.25) + MC[1][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
-        N_mc.append(
-            MC[2][1][0] + MC[2][2][0] * (data[i][1] - MC[0]) + MC[2][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
-            MC[2][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[2][5][0] * np.cos(
-                2 * (data[i][1] - MC[0]) / 365.25) + MC[2][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
-        h_mc.append(
-            MC[3][1][0] + MC[3][2][0] * (data[i][1] - MC[0]) + MC[3][3][0] * np.cos((data[i][1] - MC[0]) / 365.25) +
-            MC[3][4][0] * np.sin((data[i][1] - MC[0]) / 365.25) + MC[3][5][0] * np.cos(
-                2 * (data[i][1] - MC[0]) / 365.25) + MC[3][6][0] * np.sin(2 * (data[i][1] - MC[0]) / 365.25))
+    E_mc = MC[1][-1][1]
+    N_mc = MC[2][-1][1]
+    h_mc = MC[3][-1][1]
+
 
     py.figure(8)
 
