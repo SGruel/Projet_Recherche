@@ -32,7 +32,6 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,extend=False):
     Ninv=np.linalg.inv(N)
     X = np.dot(Ninv, K)
     V = b - np.dot(a, X)
-    East_true = np.dot(a, X)
     # on  regarde ensuite le facteur unitaire
     sigma2 = np.dot(np.transpose(V), np.dot(p, V)) / (
         len(data) - len(a[1]))  # len(a[1]) correspondant au nombre de paramêtre
@@ -99,10 +98,10 @@ def matriceA(data, t0, periode):
     :param t0: temps de reference
     :return: matrice
     """
-    liste_saut = []
-    for i in range(len(data)):
-        if data[i, 0] != 1 and not (data[i, 0] in liste_saut):
-            liste_saut.append(int(data[i, 0]))
+
+    liste_saut=np.unique(data[:,0])
+    if len(liste_saut)==1:
+        liste_saut=[]
 
     nb_serie = len(liste_saut)
     A = np.zeros((len(data), 2 + 2 * len(periode) + nb_serie))
