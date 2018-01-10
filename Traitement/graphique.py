@@ -5,7 +5,7 @@ from Traitement.formatage import formatage
 from MIDAS.vitesseMidas import globalMidas
 from Moindres_Carres.vitesse_MC import moindreCarres
 from Moindres_Carres.MC_scipy import test_MC
-
+import csv
 
 def graphiqueUnique(link):
     """
@@ -304,3 +304,92 @@ def graphiqueCompMC(link, periode, robust=False):
     py.legend()
     py.savefig("..\\graph\\comparaison_simple\\" + link[-12:-8] + "_h")
     py.close()
+
+
+
+def graphstation(stationname):
+    fileMCrobuste='../Resultatcsv/MC/'+stationname+'_robuste.csv'
+    fileMC='../Resultatcsv/MC/'+stationname+'.csv'
+    fileMIDAS='../Resultatcsv/MIDAS/'+stationname+'.csv'
+    MC_robuste=np.genfromtxt(fileMCrobuste,delimiter=',',dtype=float,skip_header=10)
+    MC=np.genfromtxt(fileMC,delimiter=',',dtype=float,skip_header=10)
+    MIDAS = np.genfromtxt(fileMIDAS, delimiter=',', dtype=float,skip_header=10)
+    date_mid=MIDAS[:,0]
+    date=MC[:,0]
+
+    E_MC=MC[:,1]*365.25*1000
+    N_MC=MC[:,3]*365.25*1000
+    H_MC=MC[:,5]*365.25*1000
+    ecE_MC = MC[:, 2]*365.25*1000
+    ecN_MC = MC[:, 4]*365.25*1000
+    ecH_MC = MC[:, 6]*365.25*1000
+
+    E_MC_robuste = MC_robuste[:, 1]*365.25*1000
+    N_MC_robuste = MC_robuste[:, 3]*365.25*1000
+    H_MC_robuste = MC_robuste[:, 5]*365.25*1000
+    ecE_MC_robuste = MC_robuste[:, 2]*365.25*1000
+    ecN_MC_robuste = MC_robuste[:, 4]*365.25*1000
+    ecH_MC_robuste = MC_robuste[:, 6]*365.25*1000
+
+    E_MIDAS = MIDAS[:, 1]*365.25*1000
+    N_MIDAS = MIDAS[:, 3]*365.25*1000
+    H_MIDAS = MIDAS[:, 5]*365.25*1000
+    ecE_MIDAS = MIDAS[:, 2]*365.25*1000
+    ecN_MIDAS = MIDAS[:, 4]*365.25*1000
+    ecH_MIDAS = MIDAS[:, 6]*365.25*1000
+
+
+
+
+    py.figure(15)
+    py.plot(date, E_MC, 'g', label='Moindres Carrés ')
+    py.plot(date,ecE_MC+E_MC,'g--',label='ecart-type sur les moindres carrés')
+    py.plot(date, -ecE_MC+E_MC, 'g--')
+    py.plot(date, E_MC_robuste, 'r', label='Moindres Carrés robuste ')
+    py.plot(date, ecE_MC_robuste+E_MC_robuste, 'r--', label='ecart-type sur les moindres carrés robuste')
+    py.plot(date, -ecE_MC_robuste+E_MC_robuste, 'r--')
+    py.plot(date_mid, E_MIDAS, 'b', label='Midas')
+    py.plot(date_mid, ecE_MIDAS+E_MIDAS, 'b--', label='ecart-type sur MIDAS')
+    py.plot(date_mid, -ecE_MIDAS + E_MIDAS, 'b--')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("vitesse(mm/an))")
+
+    py.axis([700, date[-1], E_MC[-1] - 5, E_MC[-1] + 5])
+    py.savefig('../graph/triplette/'+stationname+'_E')
+    py.close()
+
+    py.figure(16)
+    py.plot(date, N_MC, 'g', label='Moindres Carrés ')
+    py.plot(date,ecN_MC+N_MC,'g--',label='ecart-type sur les moindres carrés')
+    py.plot(date, -ecN_MC+N_MC, 'g--')
+    py.plot(date, N_MC_robuste, 'r', label='Moindres Carrés robuste ')
+    py.plot(date, ecN_MC_robuste+N_MC_robuste, 'r--', label='ecart-type sur les moindres carrés robuste')
+    py.plot(date, -ecN_MC_robuste+N_MC_robuste, 'r--')
+    py.plot(date_mid, N_MIDAS, 'b', label='Midas')
+    py.plot(date_mid, ecN_MIDAS+N_MIDAS, 'b--', label='ecart-type sur MIDAS')
+    py.plot(date_mid, -ecN_MIDAS + N_MIDAS, 'b--')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("vitesse(mm/an)")
+    py.axis([700, date[-1], N_MC[-1]-5, N_MC[-1]+5])
+    py.savefig('../graph/triplette/'+stationname+'_N')
+    py.close()
+    
+    
+    py.figure(17)
+    py.plot(date, H_MC, 'g', label='Moindres Carrés ')
+    py.plot(date,ecH_MC+H_MC,'g--',label='ecart-type sur les moindres carrés')
+    py.plot(date, -ecH_MC+H_MC, 'g--')
+    py.plot(date, H_MC_robuste, 'r', label='Moindres Carrés robuste ')
+    py.plot(date, ecH_MC_robuste+H_MC_robuste, 'r--', label='ecart-type sur les moindres carrés robuste')
+    py.plot(date, -ecH_MC_robuste+H_MC_robuste, 'r--')
+    py.plot(date_mid, H_MIDAS, 'b', label='Midas')
+    py.plot(date_mid, ecH_MIDAS+H_MIDAS, 'b--', label='ecart-type sur MIDAS')
+    py.plot(date_mid, -ecH_MIDAS + H_MIDAS, 'b--')
+    py.xlabel("Temps en jour de mesure (j)")
+    py.ylabel("vitesse(mm/an)")
+    py.axis([700, date[-1], H_MC[-1] - 5, H_MC[-1] + 5])
+    py.savefig('../graph/triplette/'+stationname+'_H')
+
+    py.close()
+
+

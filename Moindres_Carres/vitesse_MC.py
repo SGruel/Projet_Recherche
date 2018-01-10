@@ -38,8 +38,10 @@ def moindreCarres_iter(data,a,b,p,pointsFaux,extend=False):
     # on traite ensuite les points faux
     Vnorm=np.zeros((V.shape[0],V.shape[1]))
     for i in range (len(V)):
+        test=np.dot(a[i],np.dot(Ninv,a[i].reshape((len(a[i]), 1))))
+        sub=sigma2*(1/p[i][i]-np.dot(a[i],np.dot(Ninv,a[i].reshape((len(a[i]), 1)))))
         Vnorm[i]=V[i]/np.sqrt(sigma2*(1/p[i][i]-np.dot(a[i],np.dot(Ninv,a[i].reshape((len(a[i]), 1))))))
-    err=np.where(Vnorm>3)[0]
+    err=np.where(abs(Vnorm)>3)[0]
     max=-1
     ierr=-1
     for e in err:
@@ -100,10 +102,7 @@ def matriceA(data, t0, periode):
     """
 
     liste_saut=np.unique(data[:,0])
-    if len(liste_saut)==1:
-        liste_saut=[]
-
-    nb_serie = len(liste_saut)
+    nb_serie = len(liste_saut)-1
     A = np.zeros((len(data), 2 + 2 * len(periode) + nb_serie))
     A[:, 0] = 1
     A[:, 1] = (data[:, 1] - t0)
@@ -113,8 +112,8 @@ def matriceA(data, t0, periode):
         A[:, (2 * i + 3)] = np.sin((A[:, 1] / periode[i]))
     # indice de saut
 
-    for i in range(len(liste_saut)):
-        loc = np.where(data[:, 0] == liste_saut[i])
+    for i in range(len(liste_saut)-1):
+        loc = np.where(data[:, 0] == liste_saut[i+1])
         A[loc, i + 2 * len(periode) + 2] = 1
 
     return A

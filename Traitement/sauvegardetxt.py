@@ -5,7 +5,7 @@ from Moindres_Carres.vitesse_MC import moindreCarres
 import csv
 
 
-def txtMidas(link, date_deb=0):
+def txtMidas(link, date_deb=-1):
     """
     Fonction qui va analyser un fichier .xyz pour sortir des graphiques sur l'évolution de la vitesse calculer par
     la méthode MIDAS en fonction du nombre de jour de mesure.
@@ -27,7 +27,6 @@ def txtMidas(link, date_deb=0):
         file = csv.writer(filename)
         # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
         for i in nb_mesure:
-            print(i)
             data = formatage(link, nb_jour=i, date_debut=date_deb)
             vitesseMidas = globalMidas(data)
             vitesseMidas_E = vitesseMidas[0][0]
@@ -43,32 +42,38 @@ def txtMidas(link, date_deb=0):
 
 
 
-def txtMC(link,periode=[365.25,365.25/2],robust=False):
-    data = formatage(link)
+def txtMC(link,periode=[365.25,365.25/2],robust=False,date_deb=-1):
+    data = formatage(link,date_deb)
 
-    liste_MC_final = moindreCarres(data, periode,robust=False)
 
     # une liste avec un pas régulier pour afficher en fonction du nombre de mesure
-    nb_mesures = np.arange(350, len(data), 50)
-    path='../Resultatcsv/MC'
+    nb1 = np.arange(50, 400, 10)
+    nb2 = np.arange(400, 1000, 50)
+    nb3 = np.arange(1000, min(len(data), 3000) + 100, 100)
+    nb4 = np.arange(3100, min(len(data), 5000), 300)
+    nb_mesures = np.concatenate((nb1, nb2, nb3, nb4, np.array([len(data)])), axis=0)
+    path='../Resultatcsv/MC/'
     if robust:
-        with open(path+link[-12:-8]+'_robuste.csv') as filename:
-            file=csv.writer(filename,'w')
-            boucle(file,link,periode,robust,nb_mesures)
+        with open(path+link[-12:-8]+'_robuste.csv','w') as filename:
+            file=csv.writer(filename)
+            boucle(file,link,periode,robust,nb_mesures,date_deb)
     else:
-        with open(path+link[-12:-8]+'.csv') as filename:
-            file=csv.writer(filename,'w')
-            boucle(file,link,periode,robust,nb_mesures)
+        with open(path+link[-12:-8]+'.csv','w') as filename:
+            file=csv.writer(filename)
+            boucle(file,link,periode,robust,nb_mesures,date_deb)
 
-def boucle(file,link,periode,robust,nb_mesures):
+def boucle(file,link,periode,robust,nb_mesures,date_deb):
     # pour chaque nombre de mesures, on effectue le calcul et on rempli chaques listes
     for i in nb_mesures:
-        data = formatage(link, nb_jour=i)
-        liste_MC = moindreCarres(data, periode,robust)
-        vitesse_E=liste_MC[1][2][0]
-        vitesse_N=liste_MC[2][2][0]
-        vitesse_h=liste_MC[3][2][0]
-        ecart_E = liste_MC[1][2][1]
-        ecart_N = liste_MC[2][2][1]
-        ecart_h = liste_MC[3][2][1]
-        file.writerow([i,vitesse_E,ecart_E,vitesse_N,ecart_N,vitesse_h,ecart_h])
+        try:
+            data = formatage(link, nb_jour=i,date_debut=date_deb)
+            liste_MC = moindreCarres(data, periode,robust= robust)
+            vitesse_E=liste_MC[1][2][0]
+            vitesse_N=liste_MC[2][2][0]
+            vitesse_h=liste_MC[3][2][0]
+            ecart_E = liste_MC[1][2][1]
+            ecart_N = liste_MC[2][2][1]
+            ecart_h = liste_MC[3][2][1]
+            file.writerow([i,vitesse_E,ecart_E,vitesse_N,ecart_N,vitesse_h,ecart_h])
+        except np.linalg.LinAlgError :
+            pass
