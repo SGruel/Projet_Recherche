@@ -4,10 +4,10 @@ import numpy as np
 def moindreCarres_iter(data,a,b,p,pointsFaux,extend=False):
     """
 
-    :param data: donnée forma
+    :param data: donnée formatée
     :param a:matrice des paramêtres
-    :param b:
-    :param p:
+    :param b: matrice des observations
+    :param p: matrice de poids
     :param pointsFaux:liste des points faux trouvés par les précédentes itérations
     :param extend:
     :return:
@@ -185,6 +185,8 @@ def moindreCarres(data,periode,covariance=False,extend=False,robust=False):
     :param data: jeu de données comprenant date série E N U  et écarts type sur ces coordonnées.
     :param covariance: Matrice de covariance supplémentaire dans le cadre de param^tre extérieures  intervnant sur la donnée mesurée
     :param periode: périodes influencant la donnée, celles-ci peuvent etre multiple ( a entrer sous forme de liste)
+    :param extend:ajoute la matrice des résidus des calcul au retour de la fonction
+    :param robust: si True effectue un traitement des points faux par iterations
     :type data: numpy.array
     :type covariance:numpy.array
     :type periode : list
