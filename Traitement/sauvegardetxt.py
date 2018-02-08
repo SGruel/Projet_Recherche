@@ -50,9 +50,9 @@ def txtMC(link,periode=[365.25,365.25/2],robust=False,date_deb=-1):
     nb1 = np.arange(50, 400, 10)
     nb2 = np.arange(400, 1000, 50)
     nb3 = np.arange(1000, min(len(data), 3000) + 100, 100)
-    nb4 = np.arange(3100, min(len(data), 5000), 300)
+    nb4 = np.arange(3100, min(len(data), 7000), 300)
     nb_mesures = np.concatenate((nb1, nb2, nb3, nb4, np.array([len(data)])), axis=0)
-    path='../Resultatcsv/MC/'
+    path='../Resultatcsv/MC_palier/'
     if robust:
         with open(path+link[-12:-8]+'_robuste.csv','w') as filename:
             file=csv.writer(filename)
